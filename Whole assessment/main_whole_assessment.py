@@ -21,10 +21,6 @@ rskf = RepeatedStratifiedKFold(n_splits=3, n_repeats=2, random_state=42)
 data_folder = '../../only_AC-80_patients/'
 metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
 
-print('Finished')
-print(metadata.shape[0])
-exit(0)
-
 labels = metadata['hemi'].values
 
 # Iterazioni
