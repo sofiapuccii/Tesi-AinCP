@@ -4,11 +4,14 @@ import hashlib
 import itertools
 import pandas as pd
 from train_best_model import train_best_model
+from numba import jit, cuda
+
 
 #import warnings 
 
 #warnings.filterwarnings("ignore")
 
+@jit(target_backend='cuda') 
 def train_classifiers(data_folder, subjects_indexes):
 
     kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'

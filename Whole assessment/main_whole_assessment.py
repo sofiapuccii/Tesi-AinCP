@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 
-
+from timeit import default_timer as timer   
 
 from train_classifiers import train_classifiers
 
@@ -33,6 +33,9 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
     #print("TRAIN:", train_index, "TEST:", test_index)
 
     #Chiamata alla funzione per allenare i migliori modelli e slezionarli
+    start = timer()
     train_classifiers(data_folder, train_index)
+    print("With GPU:", timer()-start)    
+    
 
     #TODO: Chiamata alla funzione per allenare regressore e fare assessment

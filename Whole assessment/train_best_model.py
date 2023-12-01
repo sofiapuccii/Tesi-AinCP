@@ -31,7 +31,7 @@ def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_typ
  
     param_grid = model_params
     #                                                             dobbiamo fixare il seed?
-    parameter_tuning_method = GridSearchCV(model, param_grid, cv=StratifiedKFold(n_splits=5, shuffle=True), n_jobs=5, return_train_score=True, verbose=3, scoring=scorer_f)
+    parameter_tuning_method = GridSearchCV(model, param_grid, cv=StratifiedKFold(n_splits=5, shuffle=True), n_jobs=-1, return_train_score=True, verbose=3, scoring=scorer_f)
     parameter_tuning_method.fit(X, y)
 
     estimator = parameter_tuning_method.best_estimator_
