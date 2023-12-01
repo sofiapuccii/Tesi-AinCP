@@ -35,7 +35,7 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
     #Chiamata alla funzione per allenare i migliori modelli e slezionarli
     start = timer()
     train_classifiers(data_folder, train_index)
-    print("With CPU:", timer()-start)    
+    print("Time needed:", timer()-start)    
     
 
     #TODO: Chiamata alla funzione per allenare regressore e fare assessment

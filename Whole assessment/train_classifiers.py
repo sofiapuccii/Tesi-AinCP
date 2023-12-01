@@ -11,7 +11,7 @@ from numba import jit, cuda
 
 #warnings.filterwarnings("ignore")
 
-#@jit(target_backend='cuda', nopython=False) 
+@jit(nopython=False) 
 def train_classifiers(data_folder, subjects_indexes):
 
     kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
