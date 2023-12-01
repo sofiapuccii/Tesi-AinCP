@@ -33,6 +33,6 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
     #print("TRAIN:", train_index, "TEST:", test_index)
 
     #Chiamata alla funzione per allenare i migliori modelli e slezionarli
-    train_classifiers("folder", train_index)
+    train_classifiers(data_folder, train_index)
 
     #TODO: Chiamata alla funzione per allenare regressore e fare assessment
