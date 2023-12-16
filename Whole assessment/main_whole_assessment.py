@@ -22,7 +22,7 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
     # Stampa degli indici
     #print("TRAIN:", train_index, "TEST:", test_index)
 
-    #Chiamata alla funzione per allenare i migliori modelli e slezionarli
+    #Chiamata alla funzione per allenare i migliori modelli e selezionarli
     start = default_timer()
     train_classifiers(data_folder, train_index)
     print("Time needed:", default_timer()-start)    
