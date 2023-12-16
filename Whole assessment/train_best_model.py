@@ -10,8 +10,9 @@ from sktime.classification.base import BaseClassifier
 from sktime.clustering.base import BaseClusterer
 from sklearn.metrics import f1_score
 from create_windows import create_windows
+from numba import jit
 
-
+@jit
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):
@@ -20,7 +21,7 @@ def scorer_f(estimator, X_train, Y_train):
         inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
         return max(f1_score(Y_train, y_pred, average='weighted'),f1_score(Y_train, inverted_y_pred, average='weighted'))
 
-
+@jit
 def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_type, model_params, method, window_size):
 
     # Split the string into the module and class names

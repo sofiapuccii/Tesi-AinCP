@@ -2,7 +2,9 @@ import pandas as pd
 import math
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
+from numba import jit
 
+@jit
 def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
     series = []
     y_AHA = []

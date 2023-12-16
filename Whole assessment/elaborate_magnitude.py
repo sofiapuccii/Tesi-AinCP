@@ -1,6 +1,7 @@
 import pandas as pd
+from numba import jit
 
-
+@jit
 def elaborate_magnitude(operation_type, magnitude_D, magnitude_ND):
 
     elaborated_magnitude = []
