@@ -9,7 +9,7 @@ from train_best_model import train_best_model
 
 #warnings.filterwarnings("ignore")
 
-def train_classifiers(data_folder, subjects_indexes):
+def train_classifiers(data_folder, save_folder, subjects_indexes):
 
     kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
     kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
@@ -48,7 +48,7 @@ def train_classifiers(data_folder, subjects_indexes):
 
         print('Method: ', method, '\nWindow size: ', window_size, '\nModel type: ', model_type, '\nGrid search params: ', model_params)
 
-        gridsearch_folder = "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + gridsearch_hash + "/"
+        gridsearch_folder = save_folder + "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + gridsearch_hash + "/"
 
         if not(os.path.exists(gridsearch_folder + "best_estimator.zip")) or not(os.path.exists(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv')):
 
@@ -67,5 +67,5 @@ def train_classifiers(data_folder, subjects_indexes):
     estimators_df = pd.concat(estimators_l, ignore_index=True)
     best_estimators_df = pd.concat(best_estimators_l, ignore_index=True)
 
-    estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('estimators_results.csv')
-    best_estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('best_estimators_results.csv')
+    estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv(save_folder+'estimators_results.csv')
+    best_estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv(save_folder+'best_estimators_results.csv')
