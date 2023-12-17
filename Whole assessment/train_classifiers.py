@@ -33,9 +33,9 @@ def train_classifiers(data_folder, save_folder, subjects_indexes):
     shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa']}
     shapedtw = (shapedtw_type, shapedtw_params)
 
-    l_method =              ['difference']              # ['concat','difference', 'ai']
-    l_window_size =         [900]                                       # [300, 600, 900]
-    l_gridsearch_specs =    [cnn]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+    l_method =              ['concat','difference', 'ai']              # ['concat','difference', 'ai']
+    l_window_size =         [300, 600, 900]                                       # [300, 600, 900]
+    l_gridsearch_specs =    [kmeans, kmedoids, cnn, boss, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
     estimators_l = []
     best_estimators_l = []

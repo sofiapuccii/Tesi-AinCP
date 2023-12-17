@@ -25,7 +25,7 @@ def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_typ
     module_name, class_name = model_type.rsplit(".", 1)
     model = getattr(importlib.import_module(module_name), class_name)()
 
-    X, y_AHA, _, y = create_windows(data_folder, subjects_indexes, method, window_size)
+    X, _, _, y = create_windows(data_folder, subjects_indexes, method, window_size)
  
     param_grid = model_params
     #                                                             dobbiamo fixare il seed?
