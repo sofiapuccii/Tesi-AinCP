@@ -53,7 +53,7 @@ for p in processes:
 
 processes = []
 
-for iter in range(iteration):
+for iter in range(iteration-1):
 
     save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
 
