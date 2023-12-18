@@ -67,7 +67,7 @@ for iter in range(iteration):
     p.start()
     processes.append(p)
 
-    p = multiprocessing.Process(target=test_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.85, 300))
+    p = multiprocessing.Process(target=test_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.4, 300))
     p.start()
     processes.append(p)
 
