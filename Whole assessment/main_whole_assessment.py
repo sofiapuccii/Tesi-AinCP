@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
 from train_classifiers import train_classifiers
+from test_classifiers import test_classifiers
+from test_regressor import test_regressor
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -45,8 +47,33 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
         processes.append(p)
 
     iteration += 1
-        
-    #TODO: Chiamata alla funzione per allenare regressore e fare assessment
 
+for p in processes:
+    p.join()
+
+processes = []
+
+for iter in range(iteration):
+
+    save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+
+    # Reading from a JSON file and accessing data
+    with open('iteration_data.json', 'r') as file:
+        data = json.load(file)
+    retrieved_train_indexes = data['Train Indexes']
+    retrieved_test_indexes = data['Test Indexes']
+
+    p = multiprocessing.Process(target=test_classifiers, args=(data_folder, save_folder, retrieved_test_indexes))
+    p.start()
+    processes.append(p)
+
+    p = multiprocessing.Process(target=test_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.9, 300))
+    p.start()
+    processes.append(p)
+
+    
+
+
+    
 for p in processes:
     p.join()
