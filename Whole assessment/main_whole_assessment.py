@@ -53,9 +53,9 @@ for p in processes:
 
 processes = []
 
-for iter in range(iteration-1):
+for iter in range(iteration):
 
-    save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+    save_folder = 'Iterations/Iteration_' + str(iter) + '/'
 
     # Reading from a JSON file and accessing data
     with open(save_folder + 'iteration_data.json', 'r') as file:
