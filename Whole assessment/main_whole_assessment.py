@@ -58,7 +58,7 @@ for iter in range(iteration):
     save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
 
     # Reading from a JSON file and accessing data
-    with open('iteration_data.json', 'r') as file:
+    with open(save_folder + 'iteration_data.json', 'r') as file:
         data = json.load(file)
     retrieved_train_indexes = data['Train Indexes']
     retrieved_test_indexes = data['Test Indexes']
