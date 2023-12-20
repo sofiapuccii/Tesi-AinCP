@@ -51,4 +51,4 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
     model.fit(X, y)
     print('REGRESSOR: END FIT')
     os.makedirs(save_folder + 'Regressors/', exist_ok = True)
-    jl.dump(model, reg_path)
+    jl.dump(model, save_folder + 'Regressors/'+reg_path)

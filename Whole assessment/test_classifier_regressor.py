@@ -67,7 +67,7 @@ def test_classifier_regressor(data_folder, save_folder, test_indexes, min_mean_t
     }
 
     reg_path = 'regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
-    regressor = BaseEstimator().load_from_path(save_folder + 'Regressors' + reg_path)
+    regressor = BaseEstimator().load_from_path(save_folder + 'Regressors/' + reg_path)
 
     data_regression = {
         "Regressor path": reg_path,
