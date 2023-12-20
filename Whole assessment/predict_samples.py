@@ -10,6 +10,10 @@ def predict_samples(data_folder, estimators, patient):
 
     to_discard = []
 
+    if estimators.empty:
+        print('You have selected zero estimators to predict the samples with')
+        exit(1)
+
     if len(set(es['window_size'] for es in estimators)) != 1:
         print('You have selected estimators that operates on different window sizes')
         exit(1)
