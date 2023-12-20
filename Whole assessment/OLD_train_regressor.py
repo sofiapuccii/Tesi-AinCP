@@ -11,27 +11,19 @@ def train_regressor(data_folder, estimators, reg_path, train_indexes):
 
     metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[train_indexes]
 
-    for i in range (1, metadata.shape[0]+1):
+    for index in train_indexes:
         print('REGRESSOR: PATIENT ', i, 'BEGIN')
-        _,hp_tot_list,_,_ = predict_samples(data_folder, estimators, i)
+        _,hp_tot_list,_,_ = predict_samples(data_folder, estimators, index+1)
         hp_tot_lists.append(hp_tot_list)
         print('REGRESSOR: PATIENT ', i, 'END')
-
-    lin_reg = LinearRegression()
 
     X = np.array(hp_tot_lists)
     y = np.array(metadata['AHA'].values)
 
-    print(X)
-    print(y)
 
-    # Generate a permutation index and use it to shuffle both arrays
-    permutation_idx = np.random.permutation(len(X))
-    X_shuffled = X[permutation_idx]
-    y_shuffled = y[permutation_idx]
+    model = LinearRegression()
     print('REGRESSOR: START FIT')
-    lin_reg.fit(X_shuffled, y_shuffled)
+    model.fit(X, y)
     print('REGRESSOR: END FIT')
-
     os.makedirs('Regressors', exist_ok = True)
-    jl.dump(lin_reg, reg_path)
+    jl.dump(model, reg_path)
