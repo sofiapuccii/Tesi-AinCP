@@ -67,7 +67,7 @@ if not os.path.exists('Iterations/Iteration_0/Regressors/'):
             data = json.load(file)
         retrieved_train_indexes = data['Train Indexes']
 
-        p = multiprocessing.Process(target=train_regressor, args=(data_folder, save_folder, [4, 5 , 6], min_mean_test_score, window_size))
+        p = multiprocessing.Process(target=train_regressor, args=(data_folder, save_folder, retrieved_train_indexes, min_mean_test_score, window_size))
         p.start()
         processes.append(p)
 
@@ -88,7 +88,7 @@ if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
             data = json.load(file)
         retrieved_test_indexes = data['Test Indexes']
 
-        p = multiprocessing.Process(target=test_classifier_regressor, args=(data_folder, save_folder, [1, 3, 2], min_mean_test_score, window_size))
+        p = multiprocessing.Process(target=test_classifier_regressor, args=(data_folder, save_folder, retrieved_test_indexes, min_mean_test_score, window_size))
         p.start()
         processes.append(p)
 
