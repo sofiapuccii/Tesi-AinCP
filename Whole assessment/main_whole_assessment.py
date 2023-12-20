@@ -15,6 +15,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 data_folder = '../../only_AC-80_patients/'
 
 number_of_iterations = 10
+min_mean_test_score = 0.85
+window_size = 300
 
 # New
 if not os.path.exists('Iterations/'):
@@ -66,7 +68,7 @@ if not os.path.exists('Iterations/Iteration_0/Regressors/'):
         retrieved_train_indexes = data['Train Indexes']
         retrieved_test_indexes = data['Test Indexes']
 
-        p = multiprocessing.Process(target=train_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.7, 300))
+        p = multiprocessing.Process(target=train_regressor, args=(data_folder, save_folder, retrieved_train_indexes, min_mean_test_score, window_size))
         p.start()
         processes.append(p)
 
@@ -88,7 +90,7 @@ if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
         retrieved_train_indexes = data['Train Indexes']
         retrieved_test_indexes = data['Test Indexes']
 
-        p = multiprocessing.Process(target=test_classifier_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.7, 300))
+        p = multiprocessing.Process(target=test_classifier_regressor, args=(data_folder, save_folder, retrieved_test_indexes, min_mean_test_score, window_size))
         p.start()
         processes.append(p)
 

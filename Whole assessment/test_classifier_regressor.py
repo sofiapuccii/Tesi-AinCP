@@ -4,13 +4,14 @@ import hashlib
 import numpy as np
 import pandas as pd
 import joblib as jl
+from sklearn.metrics import r2_score
 from sktime.base import BaseEstimator
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import RepeatedKFold
 from predict_samples import predict_samples
 from sklearn.model_selection import cross_val_score
 
-def test_classifier_regressor(data_folder, save_folder, train_indexes, test_indexes, min_mean_test_score, window_size):
+def test_classifier_regressor(data_folder, save_folder, test_indexes, min_mean_test_score, window_size):
 
     best_estimators_df = pd.read_csv(save_folder + 'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
@@ -20,6 +21,7 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= min_mean_test_score) & (best_estimators_df['window_size'] == window_size)].iterrows()]
 
     estimators_list = []
+    model_params_list = []
     model_params_concat = ''
     
     for estimators_specs in estimators_specs_list:
@@ -32,6 +34,7 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
         estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size'], 'hemi_cluster': grid_search_best_params['Hemi cluster']})
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
         model_params_concat = model_params_concat + str(estimator.get_params())
+        model_params_list.append(estimator.get_params())
 
     hp_tot_list_list = []
     
@@ -54,17 +57,6 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     X = np.array(hp_tot_list_list)
     y = np.array(metadata['AHA'].values)
 
-    #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
-    #kf = KFold(n_splits=5, shuffle=True)
-
-    model = LinearRegression()
-    rkf = RepeatedKFold(n_splits=8, n_repeats=10)
-    score = cross_val_score(model, X, y, cv=rkf)
-
-    print(score)
-    print(np.average(score))
-    print(score.mean())
-
     # Organizing data into a dictionary
     data_corrcoef = {
         "Method": estimators_specs_list[0]['method'],
@@ -74,9 +66,13 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
         "Correlation Coefficient": np.corrcoef(np.array(hp_tot_list_list)[:, 0], y)[0, 1]
     }
 
+    reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
+    regressor = BaseEstimator().load_from_path(save_folder + 'Regressors' + reg_path)
+
     data_regression = {
-        "Score": score,
-        "Average score": np.average(score)
+        "Regressor path": reg_path,
+        "R2 Score": r2_score(y, regressor.predict(X)),
+        "Classifiers Used": model_params_list
     }
 
     data_test = {
@@ -87,11 +83,3 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     # Writing to a JSON file
     with open(save_folder + 'combined_test_stats.json', 'w') as file:
         json.dump(data_test, file, indent=4)
-
-    final_model = LinearRegression()
-    print('REGRESSOR: START FIT')
-    final_model.fit(X, y)
-    print('REGRESSOR: END FIT')
-    reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
-    os.makedirs(reg_path, exist_ok = True)
-    jl.dump(final_model, reg_path)
