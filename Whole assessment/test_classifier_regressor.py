@@ -35,8 +35,11 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
 
     hp_tot_list_list = []
     
+    print('qui')
+
     for index in test_indexes:
         _, hp_tot, _, _ = predict_samples(data_folder, estimators_list, index+1)
+        print('quaas')
         hp_tot_list_list.append(hp_tot[0])
 
         #   hp_tot_list_list =                 y =
