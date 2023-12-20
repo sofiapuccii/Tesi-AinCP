@@ -44,7 +44,7 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
     X = np.array(hp_tot_list_list)
     y = np.array(metadata['AHA'].values)
 
-    reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
+    reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
 
     model = LinearRegression()
     print('REGRESSOR: START FIT')
