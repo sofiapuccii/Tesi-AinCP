@@ -10,7 +10,7 @@ def predict_samples(data_folder, estimators, patient):
 
     to_discard = []
 
-    if estimators.empty:
+    if not estimators:
         print('You have selected zero estimators to predict the samples with')
         exit(1)
 
