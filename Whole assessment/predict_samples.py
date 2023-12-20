@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from elaborate_magnitude import elaborate_magnitude
 
-def predict_samples(data_folder, metadata, estimators, patient):
+def predict_samples(data_folder, estimators, patient):
 
     df = pd.read_csv(data_folder + 'data/' + str(patient) + '_week_1sec.csv')
     magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
@@ -32,8 +32,6 @@ def predict_samples(data_folder, metadata, estimators, patient):
 
             if chunk_D.agg('sum') == 0 and chunk_ND.agg('sum') == 0:
                 to_discard.append(int(j/window_size))
-
-    is_hemiplegic = (metadata['hemi'].iloc[patient-1] == 2)
 
     y_list = []
     hp_tot_list = []

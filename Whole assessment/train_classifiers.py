@@ -19,11 +19,6 @@ def train_classifiers(data_folder, save_folder, subjects_indexes):
     kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
     kmedoids = (kmedoids_type, kmedoids_params)
 
-    cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
-    #cnn_params =  {'activation': ['sigmoid'], 'avg_pool_size': [3], 'batch_size': [16], 'callbacks': [None], 'kernel_size': [7], 'loss': ['mean_squared_error'], 'metrics': [None], 'n_conv_layers': [2], 'n_epochs': [2000], 'optimizer': [None], 'random_state': [None], 'use_bias': [True], 'verbose': [False]}
-    cnn_params =  {}
-    cnn = (cnn_type, cnn_params)
-
     boss_type = 'sktime.classification.dictionary_based._boss.BOSSEnsemble'
     #boss_params = {'alphabet_size': [4], 'feature_selection': ['none'], 'max_ensemble_size': [500], 'max_win_len_prop': [1], 'min_window': [10], 'n_jobs': [1], 'random_state': [None], 'save_train_predictions': [False], 'threshold': [0.92], 'typed_dict': [True], 'use_boss_distance': [True]}
     boss_params = {'feature_selection': ['chi2', 'none']}
@@ -33,9 +28,9 @@ def train_classifiers(data_folder, save_folder, subjects_indexes):
     shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa']}
     shapedtw = (shapedtw_type, shapedtw_params)
 
-    l_method =              ['concat','difference', 'ai']              # ['concat','difference', 'ai']
-    l_window_size =         [300, 600, 900]                                       # [300, 600, 900]
-    l_gridsearch_specs =    [kmeans, kmedoids, cnn, boss, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+    l_method =              ['concat','difference', 'ai']               # ['concat','difference', 'ai']
+    l_window_size =         [300, 600, 900]                             # [300, 600, 900]
+    l_gridsearch_specs =    [kmeans, kmedoids, boss, shapedtw]          # [kmeans, kmedoids, boss, shapedtw]
 
     estimators_l = []
     best_estimators_l = []

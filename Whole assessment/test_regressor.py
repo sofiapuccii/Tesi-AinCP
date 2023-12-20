@@ -92,7 +92,7 @@ def test_regressor(data_folder, save_folder, train_indexes, test_indexes, mean_t
     predicted_aha_list = []
 
     for i in range (1, metadata.shape[0]+1):
-        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
+        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, estimators_list, i)
         healthy_percentage.append(hp_tot_list)
         real_aha = metadata['AHA'].iloc[i-1]
         predicted_aha = regressor.predict(np.array([hp_tot_list]))[0]

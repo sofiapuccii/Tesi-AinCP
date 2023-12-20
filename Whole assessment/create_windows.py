@@ -12,10 +12,8 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
     y = []
     metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[subjects_indexes]
 
-    for j in range (1, metadata.shape[0]+1):
-        df = pd.read_csv(data_folder + 'data/' + str(j) + '_AHA_1sec.csv')
-
-        #print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
+    for index in range (metadata.shape[0]):
+        df = pd.read_csv(data_folder + 'data/' + str(metadata['subject'].iloc[index]) + '_AHA_1sec.csv')
 
         # Nel caso in cui non bastasse una duplicazione dell'intera time series questa verrà scartata
         if df.shape[0]<WINDOW_SIZE:
@@ -27,7 +25,6 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
         
         df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
 
-
         # Calculating magnitude
         magnitude_D = np.sqrt(np.square(df_cut['x_D']) + np.square(df_cut['y_D']) + np.square(df_cut['z_D']))
         magnitude_ND = np.sqrt(np.square(df_cut['x_ND']) + np.square(df_cut['y_ND']) + np.square(df_cut['z_ND']))
@@ -35,9 +32,9 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
             chunk_D = magnitude_D.iloc[i:i + WINDOW_SIZE]
             chunk_ND = magnitude_ND.iloc[i:i + WINDOW_SIZE]
             series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
-            y_AHA.append(metadata['AHA'].iloc[j-1])
-            y_MACS.append(metadata['MACS'].iloc[j-1])
-            y.append(metadata['hemi'].iloc[j-1]-1)
+            y_AHA.append(metadata['AHA'].iloc[index])
+            y_MACS.append(metadata['MACS'].iloc[index])
+            y.append(metadata['hemi'].iloc[index]-1)
     
     return np.array(series), y_AHA, y_MACS, np.array(y)
 

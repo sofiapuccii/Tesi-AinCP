@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
 from train_classifiers import train_classifiers
-from test_classifiers import test_classifiers
-from test_regressor import test_regressor
+from test_classifier_regressor import test_classifier_regressor
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -63,17 +62,17 @@ for iter in range(iteration):
     retrieved_train_indexes = data['Train Indexes']
     retrieved_test_indexes = data['Test Indexes']
 
-    p = multiprocessing.Process(target=test_classifiers, args=(data_folder, save_folder, retrieved_test_indexes))
+    #p = multiprocessing.Process(target=test_best_classifier, args=(data_folder, save_folder, retrieved_train_indexes))
+    #p.start()
+    #processes.append(p)
+
+    #p = multiprocessing.Process(target=test_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.4, 300))
+    #p.start()
+    #processes.append(p)
+
+    p = multiprocessing.Process(target=test_classifier_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.9, 300))
     p.start()
     processes.append(p)
 
-    p = multiprocessing.Process(target=test_regressor, args=(data_folder, save_folder, retrieved_train_indexes, retrieved_test_indexes, 0.4, 300))
-    p.start()
-    processes.append(p)
-
-    
-
-
-    
 for p in processes:
     p.join()
