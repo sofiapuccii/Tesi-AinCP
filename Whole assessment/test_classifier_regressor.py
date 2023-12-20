@@ -14,14 +14,10 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
 
     best_estimators_df = pd.read_csv(save_folder + 'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
-    print('best_estimators_df', best_estimators_df)
-
     metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[test_indexes]
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= min_mean_test_score) & (best_estimators_df['window_size'] == window_size)].iterrows()]
-
-    print('estimators_specs_list', estimators_specs_list)
 
     estimators_list = []
     model_params_concat = ''
@@ -39,8 +35,6 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
 
     hp_tot_list_list = []
     
-    print('estimators_list', estimators_list)
-
     for index in test_indexes:
         _, hp_tot, _, _ = predict_samples(data_folder, estimators_list, index+1)
         hp_tot_list_list.append(hp_tot[0])
