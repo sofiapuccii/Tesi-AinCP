@@ -9,7 +9,7 @@ from train_best_model import train_best_model
 
 #warnings.filterwarnings("ignore")
 
-def train_classifiers(data_folder, save_folder, subjects_indexes):
+def train_select_classifiers(data_folder, save_folder, subjects_indexes):
 
     kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
     kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}

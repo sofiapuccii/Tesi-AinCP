@@ -4,7 +4,7 @@ import multiprocessing
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
-from train_classifiers import train_classifiers
+from train_select_classifiers import train_select_classifiers
 from test_classifier_regressor import test_classifier_regressor
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
@@ -41,7 +41,7 @@ for train_index, test_index in rskf.split(np.empty(metadata.shape[0]), labels):
             json.dump(data, file, indent=4)
 
         #Chiamata alla funzione per allenare i migliori modelli e selezionarli
-        p = multiprocessing.Process(target=train_classifiers, args=(data_folder, save_folder, train_index))
+        p = multiprocessing.Process(target=train_select_classifiers, args=(data_folder, save_folder, train_index))
         p.start()
         processes.append(p)
 
