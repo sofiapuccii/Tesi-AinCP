@@ -7,7 +7,7 @@ iterations_folder_path = 'Iterations'
 # Iterate through each iteration folder
 for i in range(10):
     iteration_folder = f'Iteration_{i}'
-    csv_file_path = os.path.join(iterations_folder_path, iteration_folder, 'best_estimators_stats.csv')
+    csv_file_path = os.path.join(iterations_folder_path, iteration_folder, 'best_estimators_results.csv')
 
     # Check if the CSV file exists
     if os.path.exists(csv_file_path):
@@ -15,7 +15,7 @@ for i in range(10):
         df = pd.read_csv(csv_file_path)
 
         # Filter out rows where 'model_type' contains 'cnn'
-        df_filtered = df[~df['model_type'].str.contains('cnn', case=False, na=False)]
+        df_filtered = df[~df['model_type'].str.contains('CNNClassifier', case=False, na=False)]
 
         # Save the filtered DataFrame back to CSV
         df_filtered.to_csv(csv_file_path, index=False)
