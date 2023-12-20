@@ -37,7 +37,7 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     
     for index in test_indexes:
         _, hp_tot, _, _ = predict_samples(data_folder, estimators_list, index+1)
-        hp_tot_list_list.append(hp_tot[0])
+        hp_tot_list_list.append(hp_tot)
 
         #   hp_tot_list_list =                 y =
         #   [[ 95.0, 90.0, 80.0],              [56,
@@ -85,7 +85,7 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     }
 
     # Writing to a JSON file
-    with open(save_folder + 'combined_test_stats.json.json', 'w') as file:
+    with open(save_folder + 'combined_test_stats.json', 'w') as file:
         json.dump(data_test, file, indent=4)
 
     final_model = LinearRegression()
