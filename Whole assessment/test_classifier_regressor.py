@@ -64,7 +64,7 @@ def test_classifier_regressor(data_folder, save_folder, train_indexes, test_inde
     #kf = KFold(n_splits=5, shuffle=True)
 
     model = LinearRegression()
-    rkf = RepeatedKFold(n_splits=5, n_repeats=100)
+    rkf = RepeatedKFold(n_splits=8, n_repeats=10)
     score = cross_val_score(model, X, y, cv=rkf)
 
     print(score)
