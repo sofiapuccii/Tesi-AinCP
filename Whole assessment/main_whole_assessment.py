@@ -95,6 +95,28 @@ if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
     for p in processes:
         p.join()
 
+folder_prefix= "Iterations/Iteration_"
+total_r2_score = 0
+total_corr_score = 0
+
+for i in range(number_of_iterations):
+    folder_name = f"{folder_prefix}{i}"
+    json_file_path = os.path.join(folder_name, "combined_test_stats.json")
+
+    if os.path.exists(json_file_path):
+        with open(json_file_path, 'r') as json_file:
+            data = json.load(json_file)
+            total_r2_score += data['Regressor Stats']['Correlation Coefficient']
+            total_corr_score += data['Best Classifier Stats']['R2 Score']
+
+
+average_r2_score = total_r2_score / number_of_iterations
+average_corr_score = total_corr_score / number_of_iterations
+    
+print(f"The average r2 score for the regressor is: {average_r2_score}")
+print(f"The average correlation CPI-AHA is: {average_corr_score}")
+
+
 print(' ----- ESECUZIONE DEL MAIN TERMINATA ----- ')
 
 
