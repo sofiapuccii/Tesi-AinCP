@@ -96,26 +96,35 @@ if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
         p.join()
 
 folder_prefix= "Iterations/Iteration_"
-total_r2_score = 0
-total_corr_score = 0
+r2_list = []
+corrcoef_list = []
 
 for i in range(number_of_iterations):
     folder_name = f"{folder_prefix}{i}"
-    print(folder_name)
     json_file_path = os.path.join(folder_name, "combined_test_stats.json")
 
     if os.path.exists(json_file_path):
         with open(json_file_path, 'r') as json_file:
             data = json.load(json_file)
-            total_r2_score += data['Regressor Stats']['R2 Score']
-            total_corr_score += data['Best Classifier Stats']['Correlation Coefficient']
+            r2_list.append(data['Regressor Stats']['R2 Score'])
+            corrcoef_list.append(data['Best Classifier Stats']['Correlation Coefficient'])
 
+average_r2_score = np.mean(r2_list)
+average_corr_score = np.mean(corrcoef_list)
 
-average_r2_score = total_r2_score / number_of_iterations
-average_corr_score = total_corr_score / number_of_iterations
-    
 print(f"The average r2 score for the regressor is: {average_r2_score}")
 print(f"The average correlation CPI-AHA is: {average_corr_score}")
+
+results = {
+    "R2 Score List":r2_list,
+    "Correlation List":corrcoef_list,
+    "Average R2 Score": average_r2_score,
+    "Average CPI-AHA Correlation": average_corr_score
+}
+
+# Writing to a JSON file
+with open('Iterations/test_results.json', 'w') as file:
+    json.dump(results, file, indent=4)
 
 
 print(' ----- ESECUZIONE DEL MAIN TERMINATA ----- ')
