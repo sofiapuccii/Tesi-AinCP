@@ -101,13 +101,14 @@ total_corr_score = 0
 
 for i in range(number_of_iterations):
     folder_name = f"{folder_prefix}{i}"
+    print(folder_name)
     json_file_path = os.path.join(folder_name, "combined_test_stats.json")
 
     if os.path.exists(json_file_path):
         with open(json_file_path, 'r') as json_file:
             data = json.load(json_file)
-            total_r2_score += data['Regressor Stats']['Correlation Coefficient']
-            total_corr_score += data['Best Classifier Stats']['R2 Score']
+            total_r2_score += data['Regressor Stats']['R2 Score']
+            total_corr_score += data['Best Classifier Stats']['Correlation Coefficient']
 
 
 average_r2_score = total_r2_score / number_of_iterations
