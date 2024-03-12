@@ -9,7 +9,7 @@ from train_best_model import train_best_model
 
 #warnings.filterwarnings("ignore")
 
-def train_select_classifiers(data_folder, save_folder, subjects_indexes):
+def train_select_classifiers(data_folder, save_folder, subjects_indexes, l_window_size = [300, 600, 900], l_method = ['concat','difference', 'ai']):
 
     kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
     kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
@@ -28,8 +28,6 @@ def train_select_classifiers(data_folder, save_folder, subjects_indexes):
     shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa']}
     shapedtw = (shapedtw_type, shapedtw_params)
 
-    l_method =              ['concat','difference', 'ai']               # ['concat','difference', 'ai']
-    l_window_size =         [300, 600, 900]                             # [300, 600, 900]
     l_gridsearch_specs =    [kmeans, kmedoids, boss, shapedtw]          # [kmeans, kmedoids, boss, shapedtw]
 
     estimators_l = []
