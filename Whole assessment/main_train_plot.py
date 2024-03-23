@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from train_select_classifiers import train_select_classifiers
 from train_regressor import train_regressor
-from plotting import plot_dashboard, plot_corrcoeff
+from plotting import plot_dashboards, plot_corrcoeff
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -36,5 +36,5 @@ if not os.path.exists('Best_model/dashboard/week_stats_graphs/'):
     
     print(' ----- CREATING DASHBOARDS ----- ')
     
-    plot_dashboard(data_folder, save_folder='Best_model/', min_mean_test_score=min_mean_test_score, window_size=window_size, stats_folder=stats_folder)
+    plot_dashboards(data_folder, save_folder='Best_model/', min_mean_test_score=min_mean_test_score, window_size=window_size, stats_folder=stats_folder)
     plot_corrcoeff(stats_folder)
