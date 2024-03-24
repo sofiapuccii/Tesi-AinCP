@@ -41,7 +41,8 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
 
         with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
             grid_search_best_params = json.load(stats_f)
-
+        
+        print('Loading -> ', estimator_dir + 'best_estimator.zip')
         estimator = BaseEstimator().load_from_path(estimator_dir + 'best_estimator.zip')
         estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size'], 'hemi_cluster': grid_search_best_params['Hemi cluster']})
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
@@ -84,7 +85,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
     predicted_aha_list = []
 
 
-    for i in range (1, metadata.shape[0]+1):
+    for i in range (1, 3):
         predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
         healthy_percentage.append(hp_tot_list)
         real_aha = metadata['AHA'].iloc[i-1]
@@ -302,35 +303,35 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
 
     #print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
 
-    def plot_corrcoeff(stats_folder):
-        predictions_dataframe = pd.read_csv(stats_folder + 'predictions_dataframe.csv', index_col=0)
+def plot_corrcoeff(stats_folder):
+    predictions_dataframe = pd.read_csv(stats_folder + 'predictions_dataframe.csv', index_col=0)
 
-        predictions_dataframe['CPI'] = [float(string.strip('[]')) for string in predictions_dataframe['healthy_percentage']]
-        predictions_dataframe['CPI'] = predictions_dataframe['CPI'].iloc[:, 0]
-        predictions_dataframe['CPI'] = predictions_dataframe['CPI'].round(3)
+    predictions_dataframe['CPI'] = [float(string.strip('[]')) for string in predictions_dataframe['healthy_percentage']]
+    predictions_dataframe['CPI'] = predictions_dataframe['CPI'].iloc[:, 0]
+    predictions_dataframe['CPI'] = predictions_dataframe['CPI'].round(3)
 
-        scatter_x = np.array(predictions_dataframe['CPI'].values)
-        scatter_y = np.array(predictions_dataframe['AHA'].values)
-        group = np.array(predictions_dataframe['MACS'].values)
-        cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
+    scatter_x = np.array(predictions_dataframe['CPI'].values)
+    scatter_y = np.array(predictions_dataframe['AHA'].values)
+    group = np.array(predictions_dataframe['MACS'].values)
+    cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
 
-        #print(scatter_x)
-        #print(scatter_y)
-        #print(group)
+    #print(scatter_x)
+    #print(scatter_y)
+    #print(group)
 
-        fig, ax = plt.subplots()
-        ax.grid()
-        for g in np.unique(group):
-            ix = np.where(group == g)
-            ax.scatter(scatter_x[ix], scatter_y[ix], c = cdict[g], label = 'MACS ' + str(g), s = 50)
-        ax.legend()
+    fig, ax = plt.subplots()
+    ax.grid()
+    for g in np.unique(group):
+        ix = np.where(group == g)
+        ax.scatter(scatter_x[ix], scatter_y[ix], c = cdict[g], label = 'MACS ' + str(g), s = 50)
+    ax.legend()
 
-        plt.xlabel('CPI')
-        plt.ylabel('AHA')
-        plt.savefig(stats_folder+'scatter_AHA_CPI_best_model.png', dpi = 500)
+    plt.xlabel('CPI')
+    plt.ylabel('AHA')
+    plt.savefig(stats_folder+'scatter_AHA_CPI_best_model.png', dpi = 500)
 
-        #plt.xlabel('AHA')
-        #plt.ylabel('CPI')
-        #plt.legend(['a'], ['b'], ['c'])
-        #plt.show()
-        #plt.close()
+    #plt.xlabel('AHA')
+    #plt.ylabel('CPI')
+    #plt.legend(['a'], ['b'], ['c'])
+    #plt.show()
+    #plt.close()
