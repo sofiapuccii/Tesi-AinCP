@@ -32,7 +32,7 @@ if not os.path.exists('Best_model/Regressors/'):
     
     train_regressor(data_folder, save_folder='Best_model/', train_indexes=subjects_indexes, min_mean_test_score=min_mean_test_score, window_size=window_size)
 
-if not os.path.exists('Best_model/dashboard/week_stats_graphs/'):
+if not os.path.exists('Best_model/'+stats_folder):
     
     print(' ----- CREATING DASHBOARDS ----- ')
     
