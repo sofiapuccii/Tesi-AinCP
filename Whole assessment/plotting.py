@@ -13,12 +13,14 @@ import hashlib
 
 
 
-def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size, stats_folder):
+def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size):
         
     warnings.filterwarnings("ignore")
 
     # Cambio la directory di esecuzione in quella dove si trova questo file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    stats_folder = save_folder + 'Week_stats/'
 
     best_estimators_df = pd.read_csv(save_folder+'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
