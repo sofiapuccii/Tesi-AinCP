@@ -13,7 +13,7 @@ import hashlib
 
 
 
-def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, stats_folder):
+def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size, stats_folder):
         
     warnings.filterwarnings("ignore")
 
@@ -48,7 +48,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
         model_id_concat = model_id_concat + str(estimator.get_params())
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
+    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[subjects_indexes]
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_id_concat).encode()).hexdigest()[:10])
@@ -84,19 +84,19 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
     healthy_percentage = []
     predicted_aha_list = []
 
-    for i in range (1, len(metadata)+1):
-        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, estimators_list, i)
+    for index in range(len(metadata)):
+        subject = metadata['subject'].iloc[index]
+        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, estimators_list, subject)
         healthy_percentage.append(hp_tot_list)
-        real_aha = metadata['AHA'].iloc[i-1]
+        real_aha = metadata['AHA'].iloc[index]
         predicted_aha = regressor.predict(np.array([hp_tot_list]))[0]
         predicted_aha = 100 if predicted_aha > 100 else predicted_aha
         predicted_aha_list.append(predicted_aha)
 
-        print('Patient ', i)
+        print('Patient ', subject)
         print(' - AHA:     ', real_aha)
         print(' - HP:      ', hp_tot_list)
         print(' - AHA predicted from HP: ', predicted_aha)
-
 
         #################### ANDAMENTO WEEK GENERALE ####################
 
@@ -110,7 +110,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("Magnitudo")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '5est_subject_' +str(i)+'_mag.png', dpi = 500)
+        plt.savefig(stats_folder + 'subject_' +str(subject)+'_mag.png', dpi = 500)
         plt.close()
 
         # Fase di plotting
@@ -148,21 +148,21 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.plot(timestamps[::21600], ai_list)
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_AI.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_AI.png', dpi = 500)
         plt.close()
 
 
         #################### GRAFICO DEI PUNTI ####################
         for pred in predictions:
             #axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
-            plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1)
+            plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', norm=plt.Normalize(-1, +1), s=1)
 
         #plt.title('Grafico delle predizioni')
         plt.xlabel("Sample")
         plt.ylabel("Classificazione")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_samples.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_samples.png', dpi = 500)
         plt.close()
 
         #################### ANDAMENTO A BLOCCHI ####################
@@ -193,7 +193,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("CPI")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIblocks.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_CPIblocks.png', dpi = 500)
         plt.close()
         
         ##################### ANDAMENTO SMOOTH ######################
@@ -231,7 +231,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("CPI")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIsmooth.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_CPIsmooth.png', dpi = 500)
         plt.close()
 
         ##################### SIGNIFICATIVITY PLOT ####################
@@ -249,7 +249,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("Significatività")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_sig.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_sig.png', dpi = 500)
         plt.close()
 
         ##################### PREDICTED AHA PLOT ####################
@@ -281,7 +281,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
         plt.close()
         #############################################################
 
@@ -314,7 +314,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
         plt.close()
         #############################################################
         
