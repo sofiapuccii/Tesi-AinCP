@@ -8,15 +8,15 @@ from plotting import plot_dashboards, plot_corrcoeff
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
-#data_folder = '../../only_AC-80_patients/'
+#data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
+data_folder = '../../only_AC-80_patients/'
 stats_folder = 'week_stats/'
 
-min_mean_test_score = 0.0
+min_mean_test_score = 0.85
 window_size = 300
 
 metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
-subjects_indexes = list(range(5))
+subjects_indexes = list(range(len(metadata)))
 np.random.shuffle(subjects_indexes)
 
 # New
