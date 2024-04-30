@@ -23,12 +23,20 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
         
         df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
 
+        x_D = np.array(df_cut['x_D'])
+        y_D = np.array(df_cut['y_D'])
+        z_D = np.array(df_cut['z_D'])
+
+        x_ND = np.array(df_cut['x_ND'])
+        y_ND = np.array(df_cut['y_ND'])
+        z_ND = np.array(df_cut['z_ND'])
+
         # Calculating magnitude
-        magnitude_D = np.sqrt(np.square(df_cut['x_D']) + np.square(df_cut['y_D']) + np.square(df_cut['z_D']))
-        magnitude_ND = np.sqrt(np.square(df_cut['x_ND']) + np.square(df_cut['y_ND']) + np.square(df_cut['z_ND']))
+        magnitude_D = np.sqrt(np.square(x_D) + np.square(y_D) + np.square(z_D))
+        magnitude_ND = np.sqrt(np.square(x_ND) + np.square(y_ND) + np.square(z_ND))
         for i in range (0, len(magnitude_D), WINDOW_SIZE):
-            chunk_D = magnitude_D.iloc[i:i + WINDOW_SIZE]
-            chunk_ND = magnitude_ND.iloc[i:i + WINDOW_SIZE]
+            chunk_D = magnitude_D[i:i + WINDOW_SIZE]
+            chunk_ND = magnitude_ND[i:i + WINDOW_SIZE]
             series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
             y_AHA.append(metadata['AHA'].iloc[index])
             y_MACS.append(metadata['MACS'].iloc[index])

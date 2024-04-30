@@ -24,7 +24,7 @@ if not os.path.exists('Best_model/'):
     print(' ----- TRAINING CLASSIFIERS ----- ')
 
     train_select_classifiers(data_folder, save_folder='Best_model/', subjects_indexes=subjects_indexes, l_window_size = [window_size])
-    
+
 if not os.path.exists('Best_model/Regressors/'):
 
     print(' ----- TRAINING REGRESSOR ----- ')
