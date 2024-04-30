@@ -1,7 +1,9 @@
 import pandas as pd
-from numba import jit
+#import numpy as np
+#from numba import njit
 
-@jit(forceobj=True)
+
+#@njit
 def elaborate_magnitude(operation_type, magnitude_D, magnitude_ND):
 
     elaborated_magnitude = []

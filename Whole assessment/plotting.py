@@ -8,14 +8,14 @@ from predict_samples import predict_samples
 import datetime
 import matplotlib
 import matplotlib.pyplot as plt
-import warnings 
 import hashlib
+#import warnings 
 
 
 
 def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size):
         
-    warnings.filterwarnings("ignore")
+    #warnings.filterwarnings("ignore")
 
     # Cambio la directory di esecuzione in quella dove si trova questo file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
