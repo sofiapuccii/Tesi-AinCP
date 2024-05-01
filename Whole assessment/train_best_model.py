@@ -8,9 +8,8 @@ from sktime.classification.base import BaseClassifier
 from sktime.clustering.base import BaseClusterer
 from sklearn.metrics import f1_score
 from create_windows import create_windows
-from numba import jit
+from timeit import default_timer as timer
 
-@jit(forceobj=True)
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):

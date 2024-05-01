@@ -8,17 +8,19 @@ from predict_samples import predict_samples
 import datetime
 import matplotlib
 import matplotlib.pyplot as plt
-import warnings 
 import hashlib
+#import warnings 
 
 
 
-def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, stats_folder):
+def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size):
         
-    warnings.filterwarnings("ignore")
+    #warnings.filterwarnings("ignore")
 
     # Cambio la directory di esecuzione in quella dove si trova questo file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    stats_folder = save_folder + 'Week_stats/'
 
     best_estimators_df = pd.read_csv(save_folder+'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
@@ -48,7 +50,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
         model_id_concat = model_id_concat + str(estimator.get_params())
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
+    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[subjects_indexes]
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_id_concat).encode()).hexdigest()[:10])
@@ -84,19 +86,19 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
     healthy_percentage = []
     predicted_aha_list = []
 
-    for i in range (1, 3):
-        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, estimators_list, i)
+    for index in range(len(metadata)):
+        subject = metadata['subject'].iloc[index]
+        predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, estimators_list, subject)
         healthy_percentage.append(hp_tot_list)
-        real_aha = metadata['AHA'].iloc[i-1]
+        real_aha = metadata['AHA'].iloc[index]
         predicted_aha = regressor.predict(np.array([hp_tot_list]))[0]
         predicted_aha = 100 if predicted_aha > 100 else predicted_aha
         predicted_aha_list.append(predicted_aha)
 
-        print('Patient ', i)
+        print('Patient ', subject)
         print(' - AHA:     ', real_aha)
         print(' - HP:      ', hp_tot_list)
         print(' - AHA predicted from HP: ', predicted_aha)
-
 
         #################### ANDAMENTO WEEK GENERALE ####################
 
@@ -110,7 +112,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("Magnitudo")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '5est_subject_' +str(i)+'_mag.png', dpi = 500)
+        plt.savefig(stats_folder + 'subject_' +str(subject)+'_mag.png', dpi = 500)
         plt.close()
 
         # Fase di plotting
@@ -148,21 +150,21 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.plot(timestamps[::21600], ai_list)
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_AI.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_AI.png', dpi = 500)
         plt.close()
 
 
         #################### GRAFICO DEI PUNTI ####################
         for pred in predictions:
             #axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
-            plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1)
+            plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', norm=plt.Normalize(-1, +1), s=1)
 
         #plt.title('Grafico delle predizioni')
         plt.xlabel("Sample")
         plt.ylabel("Classificazione")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_samples.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_samples.png', dpi = 500)
         plt.close()
 
         #################### ANDAMENTO A BLOCCHI ####################
@@ -193,7 +195,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.ylabel("CPI")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIblocks.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_CPIblocks.png', dpi = 500)
         plt.close()
         
         ##################### ANDAMENTO SMOOTH ######################
@@ -219,19 +221,19 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
 
             h_perc_list_smooth_list.append(h_perc_list_smooth)
 
-            plot_h_perc_list_smooth = [np.nan] * (6*12-1) + h_perc_list_smooth
+            plot_h_perc_list_smooth = [np.nan] * (trend_block_size - 1) + h_perc_list_smooth
 
             ax = plt.gca()
             ax.set_ylim([-1,101])
             ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
-            plt.plot(timestamps[::300], plot_h_perc_list_smooth)
+            plt.plot(timestamps[::window_size], plot_h_perc_list_smooth)
 
 
         plt.xlabel("Orario")
         plt.ylabel("CPI")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIsmooth.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_CPIsmooth.png', dpi = 500)
         plt.close()
 
         ##################### SIGNIFICATIVITY PLOT ####################
@@ -242,14 +244,14 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         ax.set_ylim([-1,101])
         ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
         plt.axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='Soglia')
-        plot_h_perc_list_smooth_significativity = [np.nan] * (6*12-1) + h_perc_list_smooth_significativity
-        plt.plot(timestamps[::300], plot_h_perc_list_smooth_significativity)
+        plot_h_perc_list_smooth_significativity = [np.nan] * (trend_block_size - 1) + h_perc_list_smooth_significativity
+        plt.plot(timestamps[::window_size], plot_h_perc_list_smooth_significativity)
         plt.legend()
         plt.xlabel("Orario")
         plt.ylabel("Significatività")
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_sig.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_sig.png', dpi = 500)
         plt.close()
 
         ##################### PREDICTED AHA PLOT ####################
@@ -272,16 +274,16 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='AHA')
         plt.xlabel("Orario")
         plt.ylabel("Home-AHA")
-        plot_aha_list_smooth = [np.nan] * (6*12-1) + aha_list_smooth
-        plt.plot(timestamps[::300],plot_aha_list_smooth, c = 'grey')
-        plt.plot(timestamps[::300],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
-        plt.plot(timestamps[::300],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
-        plt.plot(timestamps[::300],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
-        plt.plot(timestamps[::300],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
+        plot_aha_list_smooth = [np.nan] * (trend_block_size - 1) + aha_list_smooth
+        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey')
+        plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
+        plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
+        plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
+        plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
         plt.close()
         #############################################################
 
@@ -293,7 +295,7 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
             if np.isnan(elements[0]):
                 aha_list_smooth.append(np.nan)
             else:
-                predicted_window_aha = (regressor.predict(np.array([elements])))
+                predicted_window_aha = regressor.predict(np.array([elements]))[0]
                 aha_list_smooth.append(predicted_window_aha if predicted_window_aha <= 100 else 100)
 
         #plt.title('Andamento Home-AHA')
@@ -305,16 +307,16 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
         plt.axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='AHA')
         plt.xlabel("Orario")
         plt.ylabel("Home-AHA")
-        plot_aha_list_smooth = [np.nan] * (6*12-1) + aha_list_smooth
-        plt.plot(timestamps[::300],plot_aha_list_smooth, c = 'grey')
-        plt.plot(timestamps[::300],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
-        plt.plot(timestamps[::300],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
-        plt.plot(timestamps[::300],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
-        plt.plot(timestamps[::300],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
+        plot_aha_list_smooth = [np.nan] * (trend_block_size - 1) + aha_list_smooth
+        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey')
+        plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
+        plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
+        plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
+        plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
-        plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+        plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
         plt.close()
         #############################################################
         
@@ -336,35 +338,39 @@ def plot_dashboards(data_folder, save_folder, min_mean_test_score, window_size, 
 
     #print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
 
-def plot_corrcoeff(stats_folder):
-    predictions_dataframe = pd.read_csv(stats_folder + 'predictions_dataframe.csv', index_col=0)
+def plot_corrcoeff(save_folder):
 
-    predictions_dataframe['CPI'] = [float(string.strip('[]')) for string in predictions_dataframe['healthy_percentage']]
-    predictions_dataframe['CPI'] = predictions_dataframe['CPI'].iloc[:, 0]
-    predictions_dataframe['CPI'] = predictions_dataframe['CPI'].round(3)
+    predictions_dataframe = pd.read_csv(save_folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
+    CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
 
-    scatter_x = np.array(predictions_dataframe['CPI'].values)
+    ############################# CPI-AHA ################################
+
+    scatter_x = np.array([list[0] for list in CPI_list_list])
     scatter_y = np.array(predictions_dataframe['AHA'].values)
     group = np.array(predictions_dataframe['MACS'].values)
     cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
 
-    #print(scatter_x)
-    #print(scatter_y)
-    #print(group)
+    _, axs = plt.subplots(1, 2, figsize=(10, 5))
 
-    fig, ax = plt.subplots()
-    ax.grid()
+    axs[0].grid()
     for g in np.unique(group):
-        ix = np.where(group == g)
-        ax.scatter(scatter_x[ix], scatter_y[ix], c = cdict[g], label = 'MACS ' + str(g), s = 50)
-    ax.legend()
+        axs[0].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
 
-    plt.xlabel('CPI')
-    plt.ylabel('AHA')
-    plt.savefig(stats_folder+'scatter_AHA_CPI_best_model.png', dpi = 500)
+    axs[0].legend()
+    axs[0].set_xlabel('CPI')
+    axs[0].set_ylabel('AHA')
 
-    #plt.xlabel('AHA')
-    #plt.ylabel('CPI')
-    #plt.legend(['a'], ['b'], ['c'])
-    #plt.show()
-    #plt.close()
+    ############################# HOME-AHA ################################
+
+    scatter_x = np.array(predictions_dataframe['predicted_aha'].values)
+
+    axs[1].grid()
+    for g in np.unique(group):
+        axs[1].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
+
+    axs[1].legend()
+    axs[1].set_xlabel('Home-AHA')
+    axs[1].set_ylabel('AHA')
+
+    plt.savefig(save_folder+'Scatter_AHA_CPI_Home-AHA.png', dpi = 500)
+    plt.close()

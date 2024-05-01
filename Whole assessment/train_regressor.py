@@ -33,13 +33,11 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
 
     hp_tot_list_list = []
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[train_indexes]
-
     for index in train_indexes:
-        print('REGRESSOR: PATIENT ', index+1, 'BEGIN')
-        _,hp_tot_list,_,_ = predict_samples(data_folder, estimators_list, index+1)
+        print('REGRESSOR: PATIENT ', metadata['subject'].iloc[index], 'BEGIN')
+        _,hp_tot_list,_,_ = predict_samples(data_folder, estimators_list, metadata['subject'].iloc[index])
         hp_tot_list_list.append(hp_tot_list)
-        print('REGRESSOR: PATIENT ', index+1, 'END')
+        print('REGRESSOR: PATIENT ', metadata['subject'].iloc[index], 'END')
 
     X = np.array(hp_tot_list_list)
     y = np.array(metadata['AHA'].values)
