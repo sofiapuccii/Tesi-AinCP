@@ -25,7 +25,7 @@ if not os.path.exists('Iterations/'):
     processes = []
     iteration = 0
     metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
-    labels = metadata['hemi'].values
+    labels = metadata['hemi'].values    # Maybe it is better to straify on AHA as well?
     rskf = RepeatedStratifiedKFold(n_splits=number_of_iterations, n_repeats=1)
 
     for train_indexes, test_indexes in rskf.split(np.empty(metadata.shape[0]), labels):

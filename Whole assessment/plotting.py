@@ -343,14 +343,20 @@ def plot_corrcoeff(save_folder):
     predictions_dataframe = pd.read_csv(save_folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
     CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
 
-    ############################# CPI-AHA ################################
-
-    scatter_x = np.array([list[0] for list in CPI_list_list])
-    scatter_y = np.array(predictions_dataframe['AHA'].values)
-    group = np.array(predictions_dataframe['MACS'].values)
     cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
+    _, axs = plt.subplots(1, 3, figsize=(15, 5))
 
-    _, axs = plt.subplots(1, 2, figsize=(10, 5))
+    ############################# multi CPI-AHA ################################
+
+    scatter_x = np.array([])
+    scatter_y = np.array([])
+    group = np.array([])
+
+    for sublist, aha, macs in zip(CPI_list_list, predictions_dataframe['AHA'].values, predictions_dataframe['MACS'].values):
+        for cpi in sublist:
+            scatter_x = np.append(scatter_x, cpi)
+            scatter_y = np.append(scatter_y, aha)
+            group = np.append(group, macs)
 
     axs[0].grid()
     for g in np.unique(group):
@@ -360,17 +366,31 @@ def plot_corrcoeff(save_folder):
     axs[0].set_xlabel('CPI')
     axs[0].set_ylabel('AHA')
 
-    ############################# HOME-AHA ################################
+    ############################# CPI-AHA ################################
 
-    scatter_x = np.array(predictions_dataframe['predicted_aha'].values)
+    scatter_x = np.array([list[0] for list in CPI_list_list])
+    scatter_y = np.array(predictions_dataframe['AHA'].values)
+    group = np.array(predictions_dataframe['MACS'].values)
 
     axs[1].grid()
     for g in np.unique(group):
         axs[1].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
 
     axs[1].legend()
-    axs[1].set_xlabel('Home-AHA')
+    axs[1].set_xlabel('CPI')
     axs[1].set_ylabel('AHA')
+
+    ############################# HOME-AHA ################################
+
+    scatter_x = np.array(predictions_dataframe['predicted_aha'].values)
+
+    axs[2].grid()
+    for g in np.unique(group):
+        axs[2].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
+
+    axs[2].legend()
+    axs[2].set_xlabel('Home-AHA')
+    axs[2].set_ylabel('AHA')
 
     plt.savefig(save_folder+'Scatter_AHA_CPI_Home-AHA.png', dpi = 500)
     plt.close()
