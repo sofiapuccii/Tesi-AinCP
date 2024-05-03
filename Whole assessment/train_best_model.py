@@ -8,7 +8,6 @@ from sktime.classification.base import BaseClassifier
 from sktime.clustering.base import BaseClusterer
 from sklearn.metrics import f1_score
 from create_windows import create_windows
-from timeit import default_timer as timer
 
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
