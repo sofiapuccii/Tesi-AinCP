@@ -12,7 +12,7 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
 
     best_estimators_df = pd.read_csv(save_folder + 'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[train_indexes]
+    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= min_mean_test_score) & (best_estimators_df['window_size'] == window_size)].iterrows()]
@@ -40,7 +40,7 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
         print('REGRESSOR: PATIENT ', metadata['subject'].iloc[index], 'END')
 
     X = np.array(hp_tot_list_list)
-    y = np.array(metadata['AHA'].values)
+    y = np.array(metadata['AHA'].iloc[train_indexes].values)
 
     reg_path = 'regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
 
