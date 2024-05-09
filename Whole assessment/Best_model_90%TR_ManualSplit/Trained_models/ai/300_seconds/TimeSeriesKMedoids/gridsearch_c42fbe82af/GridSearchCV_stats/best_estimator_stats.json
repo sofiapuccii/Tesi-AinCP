@@ -1,0 +1,11 @@
+{
+    "Best index": 3,
+    "Best score": 0.8652340099428282,
+    "Refit time": 22.590583086013794,
+    "Best params": {
+        "init_algorithm": "random",
+        "metric": "dtw",
+        "n_clusters": 2
+    },
+    "Hemi cluster": 1
+}
