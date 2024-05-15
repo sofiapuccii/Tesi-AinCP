@@ -12,7 +12,7 @@ from test_classifier_regressor import test_classifier_regressor
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
-data_folder = '../../only_AC-80_patients/'
+data_folder = '../../AInCP-Training/only_AC-80_patients/'
 
 number_of_iterations = 10
 min_mean_test_score = 0.85
