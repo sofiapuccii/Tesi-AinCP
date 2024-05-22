@@ -8,6 +8,7 @@ from sktime.classification.base import BaseClassifier
 from sktime.clustering.base import BaseClusterer
 from sklearn.metrics import f1_score
 from create_windows import create_windows
+import sys
 
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
@@ -54,3 +55,5 @@ def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_typ
 
     estimator.save(gridsearch_folder + "best_estimator")
     print('Best estimator saved\n\n------------------------------------------------\n')
+    sys.stdout.flush()
+    sys.stderr.flush()

@@ -7,6 +7,7 @@ from sktime.base import BaseEstimator
 from sklearn.linear_model import LinearRegression
 from predict_samples import predict_samples
 import os
+import sys
 
 def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score, window_size):
 
@@ -38,6 +39,8 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
         _,hp_tot_list,_,_ = predict_samples(data_folder, estimators_list, metadata['subject'].iloc[index])
         hp_tot_list_list.append(hp_tot_list)
         print('REGRESSOR: PATIENT ', metadata['subject'].iloc[index], 'END')
+        sys.stdout.flush()
+        sys.stderr.flush()
 
     X = np.array(hp_tot_list_list)
     y = np.array(metadata['AHA'].iloc[train_indexes].values)
