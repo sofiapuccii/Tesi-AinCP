@@ -143,7 +143,7 @@ if not os.path.exists(folder + 'Iteration_0/Week_stats/predictions_dataframe.csv
             data = json.load(file)
         retrieved_test_indexes = data['Test Indexes']
 
-        p = multiprocessing.Process(target=plot_dashboards, args=(data_folder, save_folder, test_indexes, min_mean_test_score, window_size))
+        p = multiprocessing.Process(target=plot_dashboards, args=(data_folder, save_folder, retrieved_test_indexes, min_mean_test_score, window_size))
         
         p.start()
         processes.append(p)
