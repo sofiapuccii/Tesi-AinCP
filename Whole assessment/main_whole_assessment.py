@@ -19,8 +19,10 @@ number_of_iterations = 10
 min_mean_test_score = 0.85
 window_size = 300
 
+folder = 'Iterations_OG/'
+
 # New
-if not os.path.exists('Iterations/'):
+if not os.path.exists(folder):
 
     print(' ----- CREATING ITERATIONS FOLDERS AND TRAINING CLASSIFIERS ----- ')
     processes = []
@@ -38,7 +40,7 @@ if not os.path.exists('Iterations/'):
             "Test Indexes": test_indexes.tolist()
         }
 
-        save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+        save_folder = folder + 'Iteration_' + str(iteration) + '/'
         os.makedirs(save_folder)
         iteration += 1
         
@@ -54,14 +56,14 @@ if not os.path.exists('Iterations/'):
         p.join()
 
 
-if not os.path.exists('Iterations/Iteration_0/Regressors/'):
+if not os.path.exists(folder + 'Iteration_0/Regressors/'):
 
     print(' ----- TRAINING REGRESSORS ----- ')
     processes = []
 
     for iteration in range(number_of_iterations):
 
-        save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+        save_folder = folder + 'Iteration_' + str(iteration) + '/'
 
         # Reading from a JSON file and accessing data
         with open(save_folder + 'iteration_data.json', 'r') as file:
@@ -75,14 +77,14 @@ if not os.path.exists('Iterations/Iteration_0/Regressors/'):
     for p in processes:
         p.join()
 
-if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
+if not os.path.exists(folder + 'Iteration_0/combined_test_stats.json'):
 
     print(' ----- TESTING CLASSIFIER AND REGRESSOR ----- ')
     processes = []
 
     for iteration in range(number_of_iterations):
 
-        save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+        save_folder = folder + 'Iteration_' + str(iteration) + '/'
 
         # Reading from a JSON file and accessing data
         with open(save_folder + 'iteration_data.json', 'r') as file:
@@ -96,7 +98,7 @@ if not os.path.exists('Iterations/Iteration_0/combined_test_stats.json'):
     for p in processes:
         p.join()
 
-folder_prefix= "Iterations/Iteration_"
+folder_prefix= folder + "Iteration_"
 r2_list = []
 corrcoef_list = []
 
@@ -124,17 +126,17 @@ results = {
 }
 
 # Writing to a JSON file
-with open('Iterations/test_results.json', 'w') as file:
+with open(folder + 'test_results.json', 'w') as file:
     json.dump(results, file, indent=4)
 
-if not os.path.exists('Iterations/Iteration_0/Week_stats/predictions_dataframe.csv'):
+if not os.path.exists(folder + 'Iteration_0/Week_stats/predictions_dataframe.csv'):
 
     print(' ----- PLOTTING PREDICTIONS ----- ')
     processes = []
 
     for iteration in range(number_of_iterations):
 
-        save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+        save_folder = folder + 'Iteration_' + str(iteration) + '/'
 
         # Reading from a JSON file and accessing data
         with open(save_folder + 'iteration_data.json', 'r') as file:
