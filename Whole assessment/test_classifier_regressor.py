@@ -15,7 +15,7 @@ def test_classifier_regressor(data_folder, save_folder, test_indexes, min_mean_t
 
     best_estimators_df = pd.read_csv(save_folder + 'best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[test_indexes]
+    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= min_mean_test_score) & (best_estimators_df['window_size'] == window_size)].iterrows()]
@@ -39,7 +39,7 @@ def test_classifier_regressor(data_folder, save_folder, test_indexes, min_mean_t
     hp_tot_list_list = []
     
     for index in test_indexes:
-        _, hp_tot, _, _ = predict_samples(data_folder, estimators_list, index+1)
+        _, hp_tot, _, _ = predict_samples(data_folder, estimators_list, metadata['subject'].iloc[index])
         hp_tot_list_list.append(hp_tot)
 
         #   hp_tot_list_list =                 y =
@@ -55,7 +55,7 @@ def test_classifier_regressor(data_folder, save_folder, test_indexes, min_mean_t
     #    y.append(metadata['AHA'].iloc[i])
 
     X = np.array(hp_tot_list_list)
-    y = np.array(metadata['AHA'].values)
+    y = np.array(metadata['AHA'].iloc[test_indexes].values)
 
     # Organizing data into a dictionary
     data_corrcoef = {

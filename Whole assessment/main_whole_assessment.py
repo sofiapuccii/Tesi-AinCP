@@ -7,6 +7,7 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from train_select_classifiers import train_select_classifiers
 from train_regressor import train_regressor
 from test_classifier_regressor import test_classifier_regressor
+from plotting import plot_dashboards
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +27,7 @@ if not os.path.exists('Iterations/'):
     iteration = 0
     metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
     labels = metadata['hemi'].values    # Maybe it is better to straify on AHA as well?
-    rskf = RepeatedStratifiedKFold(n_splits=number_of_iterations, n_repeats=1)
+    rskf = RepeatedStratifiedKFold(n_splits=number_of_iterations, n_repeats=1, random_state=42)
 
     for train_indexes, test_indexes in rskf.split(np.empty(metadata.shape[0]), labels):
 
@@ -45,7 +46,7 @@ if not os.path.exists('Iterations/'):
         with open(save_folder + 'iteration_data.json', 'w') as file:
             json.dump(data, file, indent=4)
         
-        p = multiprocessing.Process(target=train_select_classifiers, args=(data_folder, save_folder, train_indexes))
+        p = multiprocessing.Process(target=train_select_classifiers, args=(data_folder, save_folder, train_indexes, [window_size]))
         p.start()
         processes.append(p)
 
@@ -126,6 +127,27 @@ results = {
 with open('Iterations/test_results.json', 'w') as file:
     json.dump(results, file, indent=4)
 
+if not os.path.exists('Iterations/Iteration_0/Week_stats/predictions_dataframe.csv'):
+
+    print(' ----- PLOTTING PREDICTIONS ----- ')
+    processes = []
+
+    for iteration in range(number_of_iterations):
+
+        save_folder = 'Iterations/Iteration_' + str(iteration) + '/'
+
+        # Reading from a JSON file and accessing data
+        with open(save_folder + 'iteration_data.json', 'r') as file:
+            data = json.load(file)
+        retrieved_test_indexes = data['Test Indexes']
+
+        p = multiprocessing.Process(target=plot_dashboards, args=(data_folder, save_folder, test_indexes, min_mean_test_score, window_size))
+        
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
 
 print(' ----- ESECUZIONE DEL MAIN TERMINATA ----- ')
 
