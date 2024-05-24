@@ -19,7 +19,7 @@ number_of_iterations = 10
 min_mean_test_score = 0.85
 window_size = 300
 
-folder = 'Iterations_OG/'
+folder = 'Iterations/'
 
 # New
 if not os.path.exists(folder):
