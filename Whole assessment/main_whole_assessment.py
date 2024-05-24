@@ -7,7 +7,7 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from train_select_classifiers import train_select_classifiers
 from train_regressor import train_regressor
 from test_classifier_regressor import test_classifier_regressor
-from plotting import plot_dashboards
+from plotting import plot_dashboards, plot_corrcoeff
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -150,6 +150,17 @@ if not os.path.exists(folder + 'Iteration_0/Week_stats/predictions_dataframe.csv
 
     for p in processes:
         p.join()
+
+if not os.path.exists(folder + 'Scatter_AHA_CPI_Home-AHA.png'):
+
+    print(' ----- PLOTTING CORRELATIONS ----- ')
+    iterations_folders = []
+
+    for iteration in range(number_of_iterations):
+
+        iterations_folders.append(folder + 'Iteration_' + str(iteration) + '/')
+
+    plot_corrcoeff(iterations_folders=iterations_folders, save_folder=folder)
 
 print(' ----- ESECUZIONE DEL MAIN TERMINATA ----- ')
 

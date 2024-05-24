@@ -40,4 +40,4 @@ if not os.path.exists('Best_model/Week_stats/'):
     print(' ----- CREATING DASHBOARDS ----- ')
     
     plot_dashboards(data_folder, save_folder='Best_model/', subjects_indexes=test_indexes, min_mean_test_score=min_mean_test_score, window_size=window_size)
-    plot_corrcoeff(save_folder='Best_model/')
+    plot_corrcoeff(iterations_folders=['Best_model/'], save_folder='Best_model/')

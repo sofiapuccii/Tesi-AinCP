@@ -338,9 +338,13 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
 
     #print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
 
-def plot_corrcoeff(save_folder):
+def plot_corrcoeff(iterations_folders:list, save_folder:str):
 
-    predictions_dataframe = pd.read_csv(save_folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
+    predictions_dataframe = pd.DataFrame()
+    for folder in iterations_folders:
+        folder_dataframe = pd.read_csv(folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
+        predictions_dataframe = pd.concat([predictions_dataframe, folder_dataframe])
+
     CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
 
     cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
