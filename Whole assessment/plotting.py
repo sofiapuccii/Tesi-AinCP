@@ -275,49 +275,20 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
         plt.xlabel("Orario")
         plt.ylabel("Home-AHA")
         plot_aha_list_smooth = [np.nan] * (trend_block_size - 1) + aha_list_smooth
-        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey')
+        # switch to green
+        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey') 
+        # will comment this stuff
         plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
         plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
         plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
         plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
+        # until here
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
         plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
         plt.close()
-        #############################################################
-
-        ##################### PREDICTED AHA PLOT ####################
-
-
-        aha_list_smooth = []
-        for elements in zip(*h_perc_list_smooth_list):
-            if np.isnan(elements[0]):
-                aha_list_smooth.append(np.nan)
-            else:
-                predicted_window_aha = regressor.predict(np.array([elements]))[0]
-                aha_list_smooth.append(predicted_window_aha if predicted_window_aha <= 100 else 100)
-
-        #plt.title('Andamento Home-AHA')
-        conf = 5
-        plt.grid()
-        ax = plt.gca()
-        ax.set_ylim([-1,101])
-        ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
-        plt.axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='AHA')
-        plt.xlabel("Orario")
-        plt.ylabel("Home-AHA")
-        plot_aha_list_smooth = [np.nan] * (trend_block_size - 1) + aha_list_smooth
-        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey')
-        plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
-        plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
-        plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
-        plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
-        plt.legend()
-        plt.gcf().set_size_inches(8, 2)
-        plt.tight_layout()
-        plt.savefig(stats_folder + '/subject_' +str(subject)+'_Home-AHA.png', dpi = 500)
-        plt.close()
+        
         #############################################################
         
         #plt.savefig(stats_folder + '/subject_' +str(i)+'.png', dpi = 500)
