@@ -1,9 +1,0 @@
-{
-    "Best index": 0,
-    "Best score": 0.8640248653782093,
-    "Refit time": 205.09174823760986,
-    "Best params": {
-        "feature_selection": "chi2"
-    },
-    "Hemi cluster": 1
-}
