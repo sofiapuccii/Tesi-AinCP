@@ -1,6 +1,7 @@
 import os
 import json
 import pandas as pd
+from itertools import product
 from sktime.base import BaseEstimator
 import joblib as jl
 import numpy as np
@@ -276,12 +277,12 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
         plt.ylabel("Home-AHA")
         plot_aha_list_smooth = [np.nan] * (trend_block_size - 1) + aha_list_smooth
         # switch to green
-        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'grey') 
+        plt.plot(timestamps[::window_size],plot_aha_list_smooth, c = 'green') 
         # will comment this stuff
-        plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
-        plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
-        plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
-        plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
+        #plt.plot(timestamps[::window_size],[x if real_aha + conf < x else np.nan for x in plot_aha_list_smooth], c ='green')
+        #plt.plot(timestamps[::window_size],[x if real_aha + 2*conf < x else np.nan for x in plot_aha_list_smooth], c ='darkgreen')
+        #plt.plot(timestamps[::window_size],[x if x < real_aha - conf else np.nan for x in plot_aha_list_smooth], c ='orange')
+        #plt.plot(timestamps[::window_size],[x if x < real_aha - 2*conf else np.nan for x in plot_aha_list_smooth], c ='darkorange')
         # until here
         plt.legend()
         plt.gcf().set_size_inches(8, 2)
@@ -309,12 +310,15 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
 
     #print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
 
-def plot_corrcoeff(iterations_folders:list, save_folder:str):
+def plot_corrcoeff_old(iterations_folders:list, save_folder:str):
 
     predictions_dataframe = pd.DataFrame()
+    counter = 0
     for folder in iterations_folders:
         folder_dataframe = pd.read_csv(folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
+        folder_dataframe['iteration'] = counter
         predictions_dataframe = pd.concat([predictions_dataframe, folder_dataframe])
+        counter += 1
 
     CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
 
@@ -325,17 +329,21 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
 
     scatter_x = np.array([])
     scatter_y = np.array([])
+    scatter_marker = np.array([])
     group = np.array([])
 
-    for sublist, aha, macs in zip(CPI_list_list, predictions_dataframe['AHA'].values, predictions_dataframe['MACS'].values):
+    for sublist, aha, macs, iteration in zip(CPI_list_list, predictions_dataframe['AHA'].values, predictions_dataframe['MACS'].values, predictions_dataframe['iteration'].values):
         for cpi in sublist:
             scatter_x = np.append(scatter_x, cpi)
             scatter_y = np.append(scatter_y, aha)
+            scatter_marker = np.append(scatter_marker, iteration)
             group = np.append(group, macs)
 
     axs[0].grid()
-    for g in np.unique(group):
-        axs[0].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
+    for g, m in product(np.unique(group), np.unique(scatter_marker)):
+        axs[0].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50, marker="$"+str(m)+"$")
+        
+    multi_corr=np.corrcoef(scatter_x, scatter_y)[0, 1]
 
     axs[0].legend()
     axs[0].set_xlabel('CPI')
@@ -350,6 +358,8 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
     axs[1].grid()
     for g in np.unique(group):
         axs[1].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
+        
+    single_corr=np.corrcoef(scatter_x, scatter_y)[0, 1]
 
     axs[1].legend()
     axs[1].set_xlabel('CPI')
@@ -362,6 +372,8 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
     axs[2].grid()
     for g in np.unique(group):
         axs[2].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label='MACS ' + str(g), s=50)
+    
+    homeaha_corr=np.corrcoef(scatter_x, scatter_y)[0, 1]
 
     axs[2].legend()
     axs[2].set_xlabel('Home-AHA')
@@ -369,3 +381,103 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
 
     plt.savefig(save_folder+'Scatter_AHA_CPI_Home-AHA.png', dpi = 500)
     plt.close()
+    
+    correlation_data = {
+        "multi_corr": multi_corr,
+        "single_corr": single_corr,
+        "homeaha_corr": homeaha_corr
+    }
+
+    with open(save_folder + 'correlation_data.json', 'w') as json_file:
+        json.dump(correlation_data, json_file, indent=4)
+
+def plot_corrcoeff(iterations_folders:list, save_folder:str):
+
+    predictions_dataframe = pd.DataFrame()
+    counter = 0
+    for folder in iterations_folders:
+        folder_dataframe = pd.read_csv(folder + 'Week_stats/predictions_dataframe.csv', index_col=0)
+        folder_dataframe['iteration'] = counter
+        predictions_dataframe = pd.concat([predictions_dataframe, folder_dataframe])
+        counter += 1
+
+    CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
+
+    cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
+    _, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+    ############################# multi CPI-AHA ################################
+
+    scatter_x = np.array([])
+    scatter_y = np.array([])
+    scatter_marker = np.array([])
+    group = np.array([])
+
+    for sublist, aha, macs, iteration in zip(CPI_list_list, predictions_dataframe['AHA'].values, predictions_dataframe['MACS'].values, predictions_dataframe['iteration'].values):
+        for cpi in sublist:
+            scatter_x = np.append(scatter_x, cpi)
+            scatter_y = np.append(scatter_y, aha)
+            scatter_marker = np.append(scatter_marker, iteration)
+            group = np.append(group, macs)
+
+    axs[0].grid()
+    plotted_labels = set()
+    for g, m in product(np.unique(group), np.unique(scatter_marker)):
+        label = 'MACS ' + str(int(g)) if g not in plotted_labels else None
+        axs[0].scatter(scatter_x[(group == g) & (scatter_marker == m)], scatter_y[(group == g) & (scatter_marker == m)], c=cdict[g], label=label, s=50, marker="$"+str(int(m))+"$")
+        plotted_labels.add(g)
+        
+    multi_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+
+    axs[0].legend()
+    axs[0].set_xlabel('CPI')
+    axs[0].set_ylabel('AHA')
+
+    ############################# CPI-AHA ################################
+
+    scatter_x = np.array([sublist[0] for sublist in CPI_list_list])
+    scatter_y = np.array(predictions_dataframe['AHA'].values)
+    scatter_marker = np.array(predictions_dataframe['iteration'].values)
+    group = np.array(predictions_dataframe['MACS'].values)
+
+    axs[1].grid()
+    plotted_labels = set()
+    for g, m in product(np.unique(group), np.unique(scatter_marker)):
+        label = 'MACS ' + str(g) if g not in plotted_labels else None
+        axs[1].scatter(scatter_x[(group == g) & (scatter_marker == m)], scatter_y[(group == g) & (scatter_marker == m)], c=cdict[g], label=label, s=50, marker="$"+str(int(m))+"$")
+        plotted_labels.add(g)
+        
+    single_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+
+    axs[1].legend()
+    axs[1].set_xlabel('CPI')
+    axs[1].set_ylabel('AHA')
+
+    ############################# HOME-AHA ################################
+
+    scatter_x = np.array(predictions_dataframe['predicted_aha'].values)
+
+    axs[2].grid()
+    plotted_labels = set()
+    for g in np.unique(group):
+        label = 'MACS ' + str(g) if g not in plotted_labels else None
+        axs[2].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label=label, s=50)
+        plotted_labels.add(g)
+    
+    homeaha_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+
+    axs[2].legend()
+    axs[2].set_xlabel('Home-AHA')
+    axs[2].set_ylabel('AHA')
+
+    plt.savefig(save_folder+'Scatter_AHA_CPI_Home-AHA.png', dpi=500)
+    plt.close()
+    
+    correlation_data = {
+        "multi_corr": multi_corr,
+        "single_corr": single_corr,
+        "homeaha_corr": homeaha_corr
+    }
+
+    with open(save_folder + 'correlation_data.json', 'w') as json_file:
+        json.dump(correlation_data, json_file, indent=4)
