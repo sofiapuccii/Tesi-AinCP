@@ -15,4 +15,6 @@ The primary executable Python scripts are located in the `Pipeline/` folder:
     *   Executes a single iteration of the analysis pipeline.
     *   Uses 10% of the data as a test set for assessment purposes.
 
-Before running the code make sure to update the data_folder variable to indicate where the data are placed.
+## Important Note
+
+Before running any of the scripts, ensure that the `data_folder` variable within the Python files is updated to point to the correct location of your dataset.
