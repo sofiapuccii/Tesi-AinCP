@@ -1,3 +1,6 @@
+# project-wide ignores
 __pycache__/
-Iteration_*/
 *.log
+
+# ignore any folders inside each Iteration_*
+**/Iteration_*/*/

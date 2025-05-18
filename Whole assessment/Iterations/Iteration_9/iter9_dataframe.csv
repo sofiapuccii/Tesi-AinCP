@@ -1,0 +1,8 @@
+Model type,Window size,Method,Parameters,MTS,STD
+TimeSeriesKMeans,300,ai,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'euclidean', 'n_clusters': 2}",0.875,0.0343
+BOSSEnsemble,300,concat,{'feature_selection': 'chi2'},0.8746,0.0347
+TimeSeriesKMedoids,300,difference,"{'init_algorithm': 'forgy', 'metric': 'dtw', 'n_clusters': 2}",0.8709,0.0718
+BOSSEnsemble,300,ai,{'feature_selection': 'none'},0.8584,0.0554
+ShapeDTW,300,difference,{'shape_descriptor_function': 'raw'},0.8574,0.0594
+BOSSEnsemble,300,difference,{'feature_selection': 'none'},0.8571,0.0575
+TimeSeriesKMeans,300,difference,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'euclidean', 'n_clusters': 2}",0.8563,0.0434
