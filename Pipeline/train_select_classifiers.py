@@ -41,7 +41,7 @@ def train_select_classifiers(data_folder, save_folder, subjects_indexes, l_windo
 
         print('Method: ', method, '\nWindow size: ', window_size, '\nModel type: ', model_type, '\nGrid search params: ', model_params)
 
-        gridsearch_folder = save_folder + "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + gridsearch_hash + "/"
+        gridsearch_folder = save_folder + "Trained_models/" + method + "/" + str(window_size) + "_points/" + model_type.split(".")[-1] + "/" + "gridsearch_" + gridsearch_hash + "/"
 
         if not(os.path.exists(gridsearch_folder + "best_estimator.zip")) or not(os.path.exists(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv')):
 

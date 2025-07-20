@@ -33,7 +33,7 @@ def test_regressor(data_folder, save_folder, train_indexes, test_indexes, mean_t
     model_id_concat = ''
 
     for estimators_specs in estimators_specs_list:
-        estimator_dir = save_folder + "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
+        estimator_dir = save_folder + "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_points/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
 
         with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
             grid_search_best_params = json.load(stats_f)

@@ -21,7 +21,7 @@ def test_best_classifier(data_folder, save_folder, subjects_indexes):
     model_params_concat = ''
 
     #for estimators_specs in estimators_specs_list:
-    estimator_dir = save_folder + "Trained_models/" + best_classifier['method'] + "/" + str(best_classifier['window_size']) + "_seconds/" + best_classifier['model_type'].split(".")[-1] + "/gridsearch_" + best_classifier['gridsearch_hash']  + "/"
+    estimator_dir = save_folder + "Trained_models/" + best_classifier['method'] + "/" + str(best_classifier['window_size']) + "_points/" + best_classifier['model_type'].split(".")[-1] + "/gridsearch_" + best_classifier['gridsearch_hash']  + "/"
 
     with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
         grid_search_best_params = json.load(stats_f)
