@@ -12,7 +12,7 @@ def predict_samples(data_folder, estimators, patient):
         print('You have selected estimators that operates on different window sizes')
         exit(1)
 
-    df = pd.read_csv(data_folder + 'data/' + str(patient) + '_week_1sec.csv')
+    df = pd.read_csv(data_folder + 'data/week/' + str(patient) + '_week_RAW.csv')
     magnitude_D = np.sqrt(np.square(np.array(df['x_D'])) + np.square(np.array(df['y_D'])) + np.square(np.array(df['z_D'])))
     magnitude_ND = np.sqrt(np.square(np.array(df['x_ND'])) + np.square(np.array(df['y_ND'])) + np.square(np.array(df['z_ND'])))
 

@@ -12,7 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
 data_folder = '../../../Dati_RAW/'
 
-min_mean_test_score = 0.6 #TODO: change to 0.85
+min_mean_test_score = 0.65 #TODO: change to 0.85
 window_size = 9000
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
