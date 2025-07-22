@@ -10,6 +10,9 @@ from sklearn.metrics import f1_score
 from create_windows import create_windows
 import sys
 
+import warnings
+warnings.filterwarnings("ignore")   #TODO: remove this line when the code is stable
+
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):

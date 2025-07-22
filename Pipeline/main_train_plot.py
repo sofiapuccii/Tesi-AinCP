@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
-data_folder = '../../Dati_RAW/'
+data_folder = '../../../Dati_RAW/'
 
 min_mean_test_score = 0.6 #TODO: change to 0.85
 window_size = 9000
@@ -23,7 +23,7 @@ sss = StratifiedShuffleSplit(n_splits=1, test_size=0.1, random_state=42)
 train_indexes, test_indexes = next(sss.split(metadata, metadata['hemi']))
 
 # New
-if not os.path.exists('Best_model/'):
+if not os.path.exists('Best_model/best_estimators_results.csv'): #TODO: da rimuovere una volta allenati tutti i modelli
 
     print(' ----- TRAINING CLASSIFIERS ----- ')
 
