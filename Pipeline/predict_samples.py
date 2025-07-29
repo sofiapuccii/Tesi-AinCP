@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from elaborate_magnitude import elaborate_magnitude
+from create_windows import decimate_df
 
 def predict_samples(data_folder, estimators, patient):
 
@@ -13,6 +14,7 @@ def predict_samples(data_folder, estimators, patient):
         exit(1)
 
     df = pd.read_csv(data_folder + 'data/week/' + str(patient) + '_week_RAW.csv')
+    df = decimate_df(df, 8)  # TODO: cambia a 8 per 10Hz, 4 per 20Hz
     magnitude_D = np.sqrt(np.square(np.array(df['x_D'])) + np.square(np.array(df['y_D'])) + np.square(np.array(df['z_D'])))
     magnitude_ND = np.sqrt(np.square(np.array(df['x_ND'])) + np.square(np.array(df['y_ND'])) + np.square(np.array(df['z_ND'])))
 

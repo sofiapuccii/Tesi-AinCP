@@ -40,7 +40,7 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
     model_id_concat = ''
     
     for estimators_specs in estimators_specs_list:
-        estimator_dir = save_folder +"Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
+        estimator_dir = save_folder +"Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_points/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
 
         with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
             grid_search_best_params = json.load(stats_f)
@@ -51,8 +51,8 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
         model_id_concat = model_id_concat + str(estimator.get_params())
 
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx').iloc[subjects_indexes]
-    metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
+    metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx').iloc[subjects_indexes]
+    metadata.drop(['dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True) # 'age_aha', 'gender', 
 
     reg_path = save_folder + 'Regressors/regressor_'+ (hashlib.sha256((model_id_concat).encode()).hexdigest()[:10])
     regressor = jl.load(reg_path)

@@ -4,3 +4,8 @@ __pycache__/
 
 # ignore any folders inside each Iteration_*
 **/Iteration_*/*/
+
+# ignore the virtual environment
+**/venv/
+# ignore the Best_model folder
+**/Best_model/
