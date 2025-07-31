@@ -10,7 +10,7 @@ def decimate_df(data, factor):
     # Isolare le colonne numeriche
     df_axis = data[['x_D', 'y_D', 'z_D', 'x_ND', 'y_ND', 'z_ND']]
     # Eseguire il downsampling
-    df_decimated = pd.DataFrame(decimate(df_axis, factor, axis=0, zero_phase=True), columns=df_axis.columns).reset_index(drop=True)
+    df_decimated = pd.DataFrame(decimate(df_axis, factor, axis=0, ftype='iir', zero_phase=True), columns=df_axis.columns).reset_index(drop=True)
     # Isolare i timestamps corretti
     timestamps = pd.DataFrame(data['datetime'].iloc[::factor].reset_index(drop=True))
     # Creare un nuovo DataFrame con i dati decimati e i timestamps
