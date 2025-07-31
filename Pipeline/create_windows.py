@@ -2,11 +2,19 @@ import pandas as pd
 import math
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
+from scipy.signal import decimate
 
 def decimate_df(data, factor):
     if factor <= 1:
         return data
-    return data.iloc[::factor].reset_index(drop=True)
+    # Isolare le colonne numeriche
+    df_axis = data[['x_D', 'y_D', 'z_D', 'x_ND', 'y_ND', 'z_ND']]
+    # Eseguire il downsampling
+    df_decimated = pd.DataFrame(decimate(df_axis, factor, axis=0, zero_phase=True), columns=df_axis.columns).reset_index(drop=True)
+    # Isolare i timestamps corretti
+    timestamps = pd.DataFrame(data['datetime'].iloc[::factor].reset_index(drop=True))
+    # Creare un nuovo DataFrame con i dati decimati e i timestamps
+    return pd.concat([timestamps, df_decimated], axis=1)
 
 def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
     series = []
@@ -18,8 +26,8 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
     for index in range (metadata.shape[0]):
         df = pd.read_csv(data_folder + 'data/AHA/' + str(metadata['subject'].iloc[index]) + '_AHA_RAW.csv')
 
-        # Si fa il downsampling della time series, prendendo un campione ogni 8
-        df = decimate_df(df, 8) # TODO: cambia a 8 per 10Hz, 4 per 20Hz
+        # Si fa il downsampling della time series, prendendo un campione ogni 3 (80 Hz -> 22.67 Hz)
+        df = decimate_df(df, 3)
 
         # Nel caso in cui non bastasse una duplicazione dell'intera time series questa verrà scartata
         if df.shape[0]<WINDOW_SIZE:
