@@ -12,8 +12,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
 data_folder = '../../../Dati_RAW/'
 
-min_mean_test_score = 0.85 #TODO: change to 0.85
-window_size = [4860, 6480, 8100] # 4860 = 180s, 6480 = 240s, 8100 = 300s
+min_mean_test_score = 0.75 #TODO: change to 0.85
+window_size = 8000  # 8000 ≃ 300s
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 subjects_indexes = list(range(len(metadata)))
@@ -27,7 +27,7 @@ if not os.path.exists('Best_model/'):
 
     print(' ----- TRAINING CLASSIFIERS ----- ')
 
-    train_select_classifiers(data_folder, save_folder='Best_model/', subjects_indexes=train_indexes, l_window_size = window_size)
+    train_select_classifiers(data_folder, save_folder='Best_model/', subjects_indexes=train_indexes, l_window_size = [window_size])
 
 if not os.path.exists('Best_model/Regressors/'):
 

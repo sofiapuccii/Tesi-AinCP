@@ -7,5 +7,9 @@ __pycache__/
 
 # ignore the virtual environment
 **/venv/
+
 # ignore the Best_model folder
 **/Best_model/
+
+# ignore the Results folder
+**/Results/

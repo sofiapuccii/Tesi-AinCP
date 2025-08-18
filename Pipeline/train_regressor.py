@@ -16,6 +16,8 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
     metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
     metadata.drop(['dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True) # rimossi 'age_aha', 'gender'
 
+    # Caricamento dei classificatori
+
     estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= min_mean_test_score) & (best_estimators_df['window_size'] == window_size)].iterrows()]
 
     estimators_list = []
@@ -32,7 +34,9 @@ def train_regressor(data_folder, save_folder, train_indexes, min_mean_test_score
         print('Loaded -> ', estimator_dir + 'best_estimator.zip')
         model_params_concat = model_params_concat + str(estimator.get_params())
 
-    hp_tot_list_list = []
+    # Allenamento del regressore
+
+    hp_tot_list_list = []   # Contiene i CPI calcolati per ogni paziente
 
     for index in train_indexes:
         print('REGRESSOR: PATIENT ', metadata['subject'].iloc[index], 'BEGIN')

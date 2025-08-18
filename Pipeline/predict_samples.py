@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from elaborate_magnitude import elaborate_magnitude
-from create_windows import decimate_df
 
 def predict_samples(data_folder, estimators, patient):
 
@@ -14,7 +13,6 @@ def predict_samples(data_folder, estimators, patient):
         exit(1)
 
     df = pd.read_csv(data_folder + 'data/week/' + str(patient) + '_week_RAW.csv')
-    df = decimate_df(df, 8)  # TODO: cambia a 8 per 10Hz, 4 per 20Hz
     magnitude_D = np.sqrt(np.square(np.array(df['x_D'])) + np.square(np.array(df['y_D'])) + np.square(np.array(df['z_D'])))
     magnitude_ND = np.sqrt(np.square(np.array(df['x_ND'])) + np.square(np.array(df['y_ND'])) + np.square(np.array(df['z_ND'])))
 
@@ -23,7 +21,7 @@ def predict_samples(data_folder, estimators, patient):
     window_size = estimators[0]['window_size']
 
     for es in estimators:
-        es['series'] = []
+        es['series'] = []   # Nuovo campo che conterrà le finestre
 
     # Fase di chunking
     for j in range (0, len(magnitude_D), window_size):
@@ -36,12 +34,12 @@ def predict_samples(data_folder, estimators, patient):
             for es in estimators:
                 es['series'].append(elaborate_magnitude(es['method'], chunk_D, chunk_ND))
 
-            if np.all(chunk_D == 0) and np.all(chunk_ND == 0):
+            if np.all(chunk_D == 0) and np.all(chunk_ND == 0):  # Vengono scartate le finestre con solo valori a zero
                 to_discard.append(int(j/window_size))
 
-    y_list = []
-    hp_tot_list = []
-    
+    y_list = [] # Lista dei valori predetti da ogni classificatore
+    hp_tot_list = [] # Lista dei CPI calcolati per questo paziente
+
     # Fase di predizione
     for es in estimators:
         #print(np.array(es['series']).shape)
@@ -68,6 +66,7 @@ def predict_samples(data_folder, estimators, patient):
         
         y_list.append(y)
 
+        # Calcolo del CPI
         hp_tot = np.nan
         if (cluster_healthy_samples != 0 or cluster_hemiplegic_samples != 0):
             hp_tot = (cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100
