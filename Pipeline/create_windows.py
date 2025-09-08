@@ -26,7 +26,7 @@ def create_windows(data_folder, subjects_indexes, operation_type, WINDOW_SIZE):
 
     for index in range (metadata.shape[0]):
         df = pd.read_csv(data_folder + 'data/AHA/' + str(metadata['subject'].iloc[index]) + '_AHA_RAW.csv')
-        
+
         # Si fa il downsampling della time series, prendendo un campione ogni 3 (80 Hz -> 26.67 Hz)
         df = decimate_df(df, 3)
 

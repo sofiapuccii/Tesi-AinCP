@@ -1,5 +1,0 @@
-Model type,Window size,Method,Parameters,MTS,STD
-TimeSeriesKMedoids,300,difference,"{'init_algorithm': 'forgy', 'metric': 'dtw', 'n_clusters': 2}",0.8859,0.0403
-TimeSeriesKMeans,300,ai,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'euclidean', 'n_clusters': 2}",0.8725,0.0547
-TimeSeriesKMeans,300,difference,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'euclidean', 'n_clusters': 2}",0.8607,0.0179
-BOSSEnsemble,300,concat,{'feature_selection': 'chi2'},0.8558,0.0333

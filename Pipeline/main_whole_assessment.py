@@ -13,11 +13,11 @@ from plotting import plot_dashboards, plot_corrcoeff
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
-data_folder = '../../AInCP-Training/only_AC-80_patients/'
+data_folder = '../../../Dati_RAW/'
 
-number_of_iterations = 10
-min_mean_test_score = 0.85
-window_size = 300
+number_of_iterations = 5
+min_mean_test_score = 0.7
+window_size = 6400
 
 folder = 'Iterations/'
 
@@ -27,7 +27,7 @@ if not os.path.exists(folder):
     print(' ----- CREATING ITERATIONS FOLDERS AND TRAINING CLASSIFIERS ----- ')
     processes = []
     iteration = 0
-    metadata = pd.read_excel(data_folder + 'metadata2023_08.xlsx')
+    metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
     labels = metadata['hemi'].values    # Maybe it is better to straify on AHA as well?
     rskf = RepeatedStratifiedKFold(n_splits=number_of_iterations, n_repeats=1, random_state=42)
 

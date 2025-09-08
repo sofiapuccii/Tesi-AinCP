@@ -12,8 +12,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 #data_folder = 'C:/Users/david/Documents/University/Borsa di Studio - REDCap/only_AC-80_patients/'
 data_folder = '../../../Dati_RAW/'
 
-min_mean_test_score = 0.75 #TODO: change to 0.85
-window_size = [4800, 6400, 8000]  # 4800 ≃ 180s, 6400 ≃ 240s, 8000 ≃ 300s
+min_mean_test_score = 0.85 #TODO: change to 0.85
+window_size = 6400  # 4800 ≃ 180s, 6400 ≃ 240s, 8000 ≃ 300s
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 subjects_indexes = list(range(len(metadata)))
