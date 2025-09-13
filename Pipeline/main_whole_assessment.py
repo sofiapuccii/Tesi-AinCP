@@ -3,11 +3,12 @@ import json
 import multiprocessing
 import numpy as np
 import pandas as pd
+import joblib as jl
 from sklearn.model_selection import RepeatedStratifiedKFold
 from train_select_classifiers import train_select_classifiers
 from train_regressor import train_regressor
 from test_classifier_regressor import test_classifier_regressor
-from plotting import plot_dashboards, plot_corrcoeff
+from plotting import plot_dashboards, plot_corrcoeff, create_timestamps_list
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -133,6 +134,12 @@ if not os.path.exists(folder + 'Iteration_0/Week_stats/predictions_dataframe.csv
 
     print(' ----- PLOTTING PREDICTIONS ----- ')
     processes = []
+
+    # Creazione lista timestamps
+    if not os.path.exists('timestamps_list'):
+        timestamps = create_timestamps_list(data_folder)
+        jl.dump(timestamps, 'timestamps_list')
+
 
     for iteration in range(number_of_iterations):
 

@@ -2,8 +2,8 @@
 __pycache__/
 *.log
 
-# ignore any folders inside each Iteration_*
-**/Iterations/
+# ignore any folders inside each Iteration_* folder
+**/Iteration_*/**
 
 # ignore the virtual environment
 **/venv/

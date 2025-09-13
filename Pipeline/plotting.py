@@ -10,8 +10,15 @@ import datetime
 import matplotlib
 import matplotlib.pyplot as plt
 import hashlib
+import math
 #import warnings 
 
+
+def create_timestamps_list(data_folder):
+    patient_df = pd.read_csv(data_folder + 'data/week/1_week_RAW.csv')  # I pazienti hanno tutti lo stesso numero di campioni
+    datetimes = patient_df[::3]['datetime']
+    timestamps_list = [matplotlib.dates.date2num(datetime.datetime.strptime(dt, '%Y-%m-%d %H:%M:%S.%f')) for dt in datetimes]
+    return timestamps_list
 
 
 def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_score, window_size):
@@ -58,22 +65,13 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
     regressor = jl.load(reg_path)
 
     os.makedirs(stats_folder, exist_ok=True)
-    if not os.path.exists('timestamps_list'):
-        start = datetime.datetime(2023, 1, 1)
-        end = datetime.datetime(2023, 1, 7)
-        step = datetime.timedelta(seconds=1)
-        timestamps = []
-        current = start
-        while current < end:
-            timestamps.append(matplotlib.dates.date2num(current))
-            current += step
-        jl.dump(timestamps, 'timestamps_list')
-    else:
-        timestamps = jl.load('timestamps_list')
+    timestamps = jl.load('timestamps_list')     # Si carica la lista dei timestamps
 
-    sample_size = window_size
+    ds_freq = 26.67     # Frequenza di campionamento del segnale decimato (Hz)
+    sample_size = math.ceil(window_size / ds_freq)   # Dimensione IN SECONDI del campione (finestra) -> 6400 / 26.67 ≃ 240 secondi
 
-    trend_block_size = int((60 * 60 * 6) / sample_size)  # Numero di finestre (da 300/600/900 secondi) raggruppate in un blocco da 6 ore
+    trend_block_size = int((60 * 60 * 6) / sample_size)  # Numero di finestre raggruppate in un blocco da 6 ore
+    block_samples = int(6 * 60 * 60 * ds_freq)      # Numero di campioni in 6 ore
     significativity_threshold = 75                  # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     plot_show = False
@@ -130,9 +128,9 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
 
         ########################## AI PLOT ##########################
         ai_list = []
-        subList_magD = [magnitude_D[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_D), trend_block_size*sample_size)]
-        subList_magND = [magnitude_ND[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_ND), trend_block_size*sample_size)]
-        for l in range(len(subList_magD)):        
+        subList_magD = [magnitude_D[n:n+block_samples] for n in range(0, len(magnitude_D), block_samples)]
+        subList_magND = [magnitude_ND[n:n+block_samples] for n in range(0, len(magnitude_ND), block_samples)]
+        for l in range(len(subList_magD)):
             if (subList_magD[l].mean() + subList_magND[l].mean()) == 0:
                 ai_list.append(np.nan)
             else:
@@ -148,7 +146,7 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
         plt.grid()
         ax = plt.gca()
         ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
-        plt.plot(timestamps[::21600], ai_list)
+        plt.plot(timestamps[::block_samples], ai_list)
         plt.gcf().set_size_inches(8, 2)
         plt.tight_layout()
         plt.savefig(stats_folder + '/subject_' +str(subject)+'_AI.png', dpi = 500)
@@ -189,7 +187,7 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
             ax = plt.gca()
             ax.set_ylim([-1,101])
             ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
-            plt.plot(timestamps[::21600], h_perc_list, drawstyle = 'steps-post')
+            plt.plot(timestamps[::block_samples], h_perc_list, drawstyle = 'steps-post')
             
         #plt.title('Andamento CPI su finestre disgiunte')
         plt.xlabel("Orario")
