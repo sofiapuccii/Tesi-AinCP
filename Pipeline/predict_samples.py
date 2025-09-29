@@ -14,7 +14,7 @@ def predict_samples(data_folder, estimators, patient):
         exit(1)
 
     df = pd.read_csv(data_folder + 'data/week/' + str(patient) + '_week_RAW.csv')
-    df = decimate_df(df, 3)
+    df = decimate_df(df, 3) # Decimazione delle time series a 26.67Hz
     magnitude_D = np.sqrt(np.square(np.array(df['x_D'])) + np.square(np.array(df['y_D'])) + np.square(np.array(df['z_D'])))
     magnitude_ND = np.sqrt(np.square(np.array(df['x_ND'])) + np.square(np.array(df['y_ND'])) + np.square(np.array(df['z_ND'])))
 

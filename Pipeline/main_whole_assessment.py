@@ -9,6 +9,7 @@ from train_select_classifiers import train_select_classifiers
 from train_regressor import train_regressor
 from test_classifier_regressor import test_classifier_regressor
 from plotting import plot_dashboards, plot_corrcoeff, create_timestamps_list
+from AI_plot import plot_AI_raw
 
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -145,7 +146,6 @@ if not os.path.exists(folder + 'Iteration_0/Week_stats/predictions_dataframe.csv
 
         save_folder = folder + 'Iteration_' + str(iteration) + '/'
 
-        # Reading from a JSON file and accessing data
         with open(save_folder + 'iteration_data.json', 'r') as file:
             data = json.load(file)
         retrieved_test_indexes = data['Test Indexes']
@@ -168,6 +168,20 @@ if not os.path.exists(folder + 'Scatter_AHA_CPI_Home-AHA.png'):
         iterations_folders.append(folder + 'Iteration_' + str(iteration) + '/')
 
     plot_corrcoeff(iterations_folders=iterations_folders, save_folder=folder)
+
+if not os.path.exists(folder + 'AI_plots/'):
+    
+    os.makedirs(folder + 'AI_plots/')
+
+    print(' ----- PLOTTING AI ----- ')
+
+    save_folder = folder + 'AI_plots/'
+
+    # Reading from a JSON file and accessing data
+    with open(folder + 'Iteration_0/iteration_data.json', 'r') as file:
+        data = json.load(file)
+    retrieved_test_indexes = data['Test Indexes']
+    plot_AI_raw(data_folder, save_folder, retrieved_test_indexes)
 
 print(' ----- ESECUZIONE DEL MAIN TERMINATA ----- ')
 

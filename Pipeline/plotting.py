@@ -6,7 +6,7 @@ from sktime.base import BaseEstimator
 import joblib as jl
 import numpy as np
 from predict_samples import predict_samples
-import datetime
+import datetime as dt
 import matplotlib
 import matplotlib.pyplot as plt
 import hashlib
@@ -16,8 +16,8 @@ import math
 
 def create_timestamps_list(data_folder):
     patient_df = pd.read_csv(data_folder + 'data/week/1_week_RAW.csv')  # I pazienti hanno tutti lo stesso numero di campioni
-    datetimes = patient_df[::3]['datetime']
-    timestamps_list = [matplotlib.dates.date2num(datetime.datetime.strptime(dt, '%Y-%m-%d %H:%M:%S.%f')) for dt in datetimes]
+    datetimes = pd.to_datetime(patient_df[::3]['datetime'], format='%Y-%m-%d %H:%M:%S.%f')
+    timestamps_list = matplotlib.dates.date2num(datetimes.dt.to_pydatetime())
     return timestamps_list
 
 
@@ -71,7 +71,7 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
     sample_size = math.ceil(window_size / ds_freq)   # Dimensione IN SECONDI del campione (finestra) -> 6400 / 26.67 ≃ 240 secondi
 
     trend_block_size = int((60 * 60 * 6) / sample_size)  # Numero di finestre raggruppate in un blocco da 6 ore
-    block_samples = int(6 * 60 * 60 * ds_freq)      # Numero di campioni in 6 ore
+    block_samples = int(6 * 60 * 60 * ds_freq)      # Numero di campionamenti in 6 ore
     significativity_threshold = 75                  # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     plot_show = False
@@ -308,6 +308,7 @@ def plot_dashboards(data_folder, save_folder, subjects_indexes, min_mean_test_sc
 
     #print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
 
+
 def plot_corrcoeff_old(iterations_folders:list, save_folder:str):
 
     predictions_dataframe = pd.DataFrame()
@@ -402,14 +403,15 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
     CPI_list_list = predictions_dataframe['healthy_percentage'].apply(json.loads).tolist()
 
     cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
-    _, axs = plt.subplots(1, 3, figsize=(15, 5))
+    _, axs = plt.subplots(1, 3, figsize=(15, 5)) 
 
     ############################# multi CPI-AHA ################################
 
+    # Grafico a dispersione di tutti i punti CPI-AHA per tutti i pazienti e tutte le iterazioni
     scatter_x = np.array([])
     scatter_y = np.array([])
     scatter_marker = np.array([])
-    group = np.array([])
+    group = np.array([])    # Livelli MACS
 
     for sublist, aha, macs, iteration in zip(CPI_list_list, predictions_dataframe['AHA'].values, predictions_dataframe['MACS'].values, predictions_dataframe['iteration'].values):
         for cpi in sublist:
@@ -425,7 +427,7 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
         axs[0].scatter(scatter_x[(group == g) & (scatter_marker == m)], scatter_y[(group == g) & (scatter_marker == m)], c=cdict[g], label=label, s=50, marker="$"+str(int(m))+"$")
         plotted_labels.add(g)
         
-    multi_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+    multi_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]    # Correlazione di Pearson tra tutti i CPI e AHA
 
     axs[0].legend()
     axs[0].set_xlabel('CPI')
@@ -433,6 +435,7 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
 
     ############################# CPI-AHA ################################
 
+    # Grafico a dispersione del primo CPI di ogni paziente per ogni iterazione contro rispettivo AHA
     scatter_x = np.array([sublist[0] for sublist in CPI_list_list])
     scatter_y = np.array(predictions_dataframe['AHA'].values)
     scatter_marker = np.array(predictions_dataframe['iteration'].values)
@@ -445,7 +448,7 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
         axs[1].scatter(scatter_x[(group == g) & (scatter_marker == m)], scatter_y[(group == g) & (scatter_marker == m)], c=cdict[g], label=label, s=50, marker="$"+str(int(m))+"$")
         plotted_labels.add(g)
         
-    single_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+    single_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]   # Correlazione di Pearson tra il primo CPI di ogni paziente e AHA
 
     axs[1].legend()
     axs[1].set_xlabel('CPI')
@@ -453,6 +456,7 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
 
     ############################# HOME-AHA ################################
 
+    #Grafico a dispersione di Home-AHA vs AHA
     scatter_x = np.array(predictions_dataframe['predicted_aha'].values)
 
     axs[2].grid()
@@ -462,7 +466,7 @@ def plot_corrcoeff(iterations_folders:list, save_folder:str):
         axs[2].scatter(scatter_x[group == g], scatter_y[group == g], c=cdict[g], label=label, s=50)
         plotted_labels.add(g)
     
-    homeaha_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]
+    homeaha_corr = np.corrcoef(scatter_x, scatter_y)[0, 1]  # Correlazione di Pearson tra Home-AHA e AHA
 
     axs[2].legend()
     axs[2].set_xlabel('Home-AHA')

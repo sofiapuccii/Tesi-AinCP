@@ -13,3 +13,6 @@ __pycache__/
 
 # ignore the Results folder
 **/Results/
+
+# ignore timestamp list
+**/timestamp_list
