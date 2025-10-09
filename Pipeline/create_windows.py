@@ -4,13 +4,14 @@ import numpy as np
 from elaborate_magnitude import elaborate_magnitude
 from scipy.signal import decimate
 
-def decimate_df(data, factor):
-    if factor <= 1:
+def decimate_df(data, factor): # Funzione per il downsampling del DataFrame
+    if factor <= 1: # non è possibile effettuare il downsampling con valori minori di 1 perchè non è possibile prendere 0.3 campioni, quindi funga da protezioni da errori di input
         return data
     # Isolare le colonne numeriche
     df_axis = data[['x_D', 'y_D', 'z_D', 'x_ND', 'y_ND', 'z_ND']]
     # Eseguire il downsampling
     df_decimated = pd.DataFrame(decimate(df_axis, factor, axis=0, ftype='fir', zero_phase=True), columns=df_axis.columns).reset_index(drop=True)
+    #axis=0 specifica su quale asse applicare la decimazione e axis=0 sono le righe (asse temporale); ftype='fir' filtro FIR finite impulse response ,
     # Isolare i timestamps corrispondenti
     timestamps = pd.DataFrame(data['datetime'].iloc[::factor].reset_index(drop=True))
     assert timestamps.shape[0] == df_decimated.shape[0], "Mismatch in lunghezza dopo decimation."
