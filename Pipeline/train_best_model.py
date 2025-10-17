@@ -13,16 +13,36 @@ import sys
 import warnings
 warnings.filterwarnings("ignore")   #TODO: remove this line when the code is stable
 
-def scorer_f(estimator, X_train, Y_train):
-    y_pred = estimator.predict(X_train)
-    if issubclass(type(estimator), BaseClassifier):
-        return f1_score(Y_train, y_pred, average='weighted')
+def scorer_f(estimator, X_train, Y_train): 
+    y_pred = estimator.predict(X_train) # predizioni del modello sulle X di train
+    if issubclass(type(estimator), BaseClassifier): 
+        return f1_score(Y_train, y_pred, average='weighted') # calcolo f1 score
     else:
         inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
         return max(f1_score(Y_train, y_pred, average='weighted'),f1_score(Y_train, inverted_y_pred, average='weighted'))
 
-def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_type, model_params, method, window_size):
-
+def train_best_model(data_folder, subjects_indexes, gridsearch_folder, model_type, model_params, method, window_size, config=None):
+    """
+    Versione estesa per supportare config opzionale.
+    """
+    
+    # Se c'è config, applica preprocessing ai dati prima del training
+    if config and config.get('use_advanced_preprocessing'):
+        try:
+            from simple_preprocessing import improved_preprocessing
+            print("  📈 Applicando preprocessing avanzato...")
+            
+            # Modifica il caricamento dati per applicare preprocessing
+            all_patient_data = create_windows(data_folder, subjects_indexes, method, window_size)
+            
+            # Applica preprocessing se disponibile
+            for i, patient_data in enumerate(all_patient_data):
+                result = improved_preprocessing(patient_data, config)
+                all_patient_data[i] = result['processed_data']
+            
+        except ImportError:
+            print("  ⚠️ Preprocessing avanzato non disponibile, uso metodo standard")
+    
     # Split the string into the module and class names
     module_name, class_name = model_type.rsplit(".", 1)
     model = getattr(importlib.import_module(module_name), class_name)()
