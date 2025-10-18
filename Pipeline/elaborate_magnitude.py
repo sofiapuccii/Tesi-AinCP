@@ -11,6 +11,6 @@ def elaborate_magnitude(operation_type, magnitude_D, magnitude_ND): # Funzione p
         elaborated_magnitude = np.divide((magnitude_D - magnitude_ND), (magnitude_D + magnitude_ND), where=mask, out=np.zeros_like(magnitude_D)) * 100 # Calcolo dell'Asymmetry Index (AI) con gestione delle divisioni per zero
     else: 
         print('operation type non supportata.')
-        exit(1)
+        exit(1) 
 
-    return elaborated_magnitude
+    return elaborated_magnitude 
